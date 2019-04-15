@@ -26,5 +26,5 @@ logLik <- function(P, E, e) {
     }
     state <- P %*% matrix(state, ncol = 1)
   }
-  return(output)
+  return(-output)
 }
