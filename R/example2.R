@@ -23,6 +23,8 @@
 #'            (pi/4)*delta^2, delta, 1 - 4*delta - pi * delta^2,
 #'            delta, (pi/4)*delta^2, delta, (pi/4)*delta^2),
 #'            ncol = 3))
+#' # Estimate observed states (no need)
+#' OS <- ostates(P, E, events)
 #' # Estimate filtered states
 #' FS <- fstates(P, E, events)
 #' # Estimate smooth states
@@ -33,6 +35,15 @@
 #' library(animation)
 #' library(ggplot2)
 #' # Create the animations
+#' # Observed states
+#' saveGIF({
+#'  pal <- colorRampPalette(c("#00000000","#000000FF"), alpha = TRUE)
+#'  ani.options(interval = 0.02)
+#'  for (i in 1:198) {
+#'    plot(raster(cbind(matrix(0,ncol = 13, nrow = 20), matrix(1,ncol=1,nrow=20), matrix(0,ncol=6,nrow=20))), breaks = c(0,0.5,1), col = c("white","red"), legend = FALSE)
+#'    plot(raster(matrix(OS[,i], ncol = 20)), zlim = c(0,1), col = pal(100), add = TRUE)
+#'    ani.pause()
+#'  }},  movie.name = 'obsest.gif')
 #' # Filtered states
 #'saveGIF({
 #'  pal <- colorRampPalette(c("#00000000","#000000FF"), alpha = TRUE)
