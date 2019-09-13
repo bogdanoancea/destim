@@ -22,6 +22,7 @@ sstates <- function(P, E, e, FS) {
       svector <- E[,e[i]] * svector
     }
     svector <- matrix(svector, nrow = 1) %*% P
+    svector <- svector / sum(svector)
     output[,i - 1] <- svector * FS[,i - 1]
     output[,i - 1] <- output[,i - 1]/sum(output[,i - 1])
   }
