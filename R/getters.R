@@ -34,6 +34,19 @@ getiparameters <- function(x) {
 }
 #' @rdname getiparameters
 getiparameters.HMM <- function(x) return(x$parameters$states)
+#' Reduced parameters getter
+rparams <- function(x) {
+  UseMethod("rparams")
+}
+#' @rdname rparams
+rparams.HMM <- function(x) return(x$parameters$reducedparams$params)
+#' Transformation matrix getter
+gettransmatrix <- function(x) {
+  UseMethod("gettransmatrix")
+}
+#' @rdname gettransmatrix
+gettransmatrix.HMM <- function(x)
+  return(x$parameters$reducedparams$transmatrix)
 #' Emissions matrix getter
 #'
 getEM <- function(x) {

@@ -15,7 +15,7 @@ initsteady <- function(x) {
     stop("This function only works with HMM objects.")
 
   # Initial steady state calculation
-  edecomp <- eigen(getTM(x))
+  edecomp <- eigen(t(getTM(x)))
   # The steady state might be not unique! Fix this later
   i <- which(abs(edecomp$values - 1) < 1e-6)[1]
   states <- Re(edecomp$vectors[,i])

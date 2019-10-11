@@ -21,6 +21,8 @@ minparams <- function(x) {
     }
     else extrarows <- c(extrarows, i)
   }
+  cconstraints <-
+    apply(trmatrix, 2, function(v) which(v)[1])
   trmatrix <- apply(trmatrix, c(1,2), as.numeric)
   MCT <- cbind(CT[extrarows,],rep(0,length(extrarows)))
   CT <- getconstraints(x)
@@ -35,9 +37,11 @@ minparams <- function(x) {
                           rep(0,length(qrdecomp$pivot) - nrow(MCT))))
   trmatrix <- trmatrix[, qrdecomp$pivot] %*% MCT
   if (!is.null(x$parameters$reducedparams))
-    whithin(x$parameters, rm(reducedparams))
+    x$parameters <- x$parameters[c("states", "transitions")]
   x$parameters <- c(x$parameters,list(reducedparams =
-                         list(transmatrix = trmatrix, params = NULL)))
+                         list(transmatrix = trmatrix,
+                              cconstraints = cconstraints,
+                              params = NULL)))
   if (!is.null(x$parameters$transitions)) {
     x$parameters$reducedparams$params <- x$parameters$transitions[
       sapply(1:(ncol(trmatrix) - 1), function(x)
