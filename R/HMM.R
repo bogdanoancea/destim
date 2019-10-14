@@ -24,13 +24,23 @@ HMM <- function(...) {
 }
 #' @rdname HMM
 HMM.integer <- function(S, TL, CT, EM) {
+  if (missing(TL))
+    TL = matrix(c(1:S,1:S), nrow = 2, byrow = TRUE)
   if (missing(CT))
     CT <- t(sapply(1:S, function(x) c(TL[1,] == x, 1.0)))
+  if (missing(EM))
+    EM <- diag(S)
   output <- list(states = list(names = as.character(1:S),
                                coordinates = NULL),
                  transitions = TL, constraints = CT,
                  emissions = EM, parameters = list(transitions = NULL,
                                                    states = NULL))
   attr(output,"class") <- "HMM"
+  return(output)
+}
+#' @rdname HMM
+HMM.character <- function(S, ...) {
+  output <- HMM(length(S), ...)
+  setsnames(output) <- S
   return(output)
 }

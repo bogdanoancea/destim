@@ -12,3 +12,10 @@
       matrix(c(x$parameters$reducedparams$params, 1), ncol = 1)) [,]
   return(x)
 }
+
+`setsnames<-` <- function(x,value) {
+  if (length(value) != nstates(x))
+    error("Wrong number of states")
+  x$states$names <- value
+  return(x)
+}
