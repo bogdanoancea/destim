@@ -37,7 +37,7 @@ initparams <- function(x) {
     eqsys <- rbind(eqsys,matrix(newrow, nrow = 1))
   }
   transitions <-
-    solve(eqsys[1:7,1:7], eqsys[1:7,8])[-1:(-nconstraints(x))]
+    solve(eqsys[,1:nrow(eqsys)], eqsys[,ncol(eqsys)])[-1:(-nconstraints(x))]
   states <- states / sum(states)
   x$parameters <- list(states = states, transitions = transitions)
 
