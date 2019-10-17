@@ -9,10 +9,9 @@ addtransition <- function(x,t) {
                 return(all(as.numeric(TL[1,] == t[1]) ==
                              CT[z, -ncol(CT)]))
     }))
-  TL <- cbind(TL, matrix(t, ncol = 1))
-  CT <- cbind(CT[, -ncol(CT)], matrix(0,nrow = nrow(CT), ncol = 1),
-              CT[, ncol(CT)])
-  CT[CTrow, ncol(CT) - 1] <- 1
+  TL <- cbind(matrix(t, ncol = 1), TL)
+  CT <- cbind(matrix(0,nrow = nrow(CT), ncol = 1), CT)
+  CT[CTrow, 1] <- 1
   x[["transitions"]] <- TL
   x[["constraints"]] <- CT
   x[["parameters"]] <- list(transitions = NULL, states = NULL)

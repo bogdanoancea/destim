@@ -29,17 +29,21 @@ initparams <- function(x) {
   eqsys <- cbind(matrix(0,nrow = nconstraints(x),
                         ncol = nconstraints(x)),
                  getconstraints(x))
-  for (i in 1:ntransitions(x)) {
-    newrow <- rep(0,ntransitions(x) + nconstraints(x) + 1)
-    newrow[nconstraints(x) + i] <- 2
-    newrow[length(newrow)] <- 2 * transitions[i]
-    newrow[1:nconstraints(x)] <- getconstraints(x)[, i]
-    eqsys <- rbind(eqsys,matrix(newrow, nrow = 1))
-  }
+  eqsys <- rbind(eqsys,
+                 cbind(t(getconstraints(x)[, 1:ntransitions(x)]),
+                       diag(ntransitions(x)) * 2,
+                       matrix(2 * transitions, ncol = 1)))
+  while (TRUE) {
   transitions <-
-    solve(eqsys[,1:nrow(eqsys)], eqsys[,ncol(eqsys)])[-1:(-nconstraints(x))]
+    solve(eqsys[,1:nrow(eqsys)], eqsys[,ncol(eqsys)])
+  transitions <- transitions[-1:(-nconstraints(x))]
+  if (all(transitions >= 0 & transitions <= 1))
+    break
+  transitions[transitions < 0] <- runif(sum(transitions < 0))
+  transitions[transitions > 1] <- runif(sum(transitions > 1))
+  eqsys[-1:(-nconstraints(x)), ncol(eqsys)] <- 2 * transitions
+  }
   states <- states / sum(states)
   x$parameters <- list(states = states, transitions = transitions)
-
   return(x)
 }
