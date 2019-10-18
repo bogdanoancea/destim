@@ -49,11 +49,11 @@ gettransmatrix.HMM <- function(x)
   return(x$parameters$reducedparams$transmatrix)
 #' Emissions matrix getter
 #'
-getEM <- function(x) {
-  UseMethod("getEM")
+emissions <- function(x) {
+  UseMethod("emissions")
 }
-#' @rdname getEM
-getEM.HMM <- function(x) return(x$emissions)
+#' @rdname emissions
+emissions.HMM <- function(x) return(x$emissions)
 #' Transitions matrix getter.
 #'
 #' Returns the transitions matrix from a HMM.

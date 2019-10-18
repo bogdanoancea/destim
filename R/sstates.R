@@ -1,4 +1,4 @@
-# This function returns the smooth states
+#' This function returns the smooth states
 
 # P : Transition matrix P(will go to i | is in j)
 # E : Event observation matrix P(detection event j | is in i)
@@ -8,7 +8,17 @@
 # observations.
 # FS: Filtered/predicted states as returned in fstates
 
-sstates <- function(P, E, e, FS) {
+sstates <- function(...) {
+  UseMethod("sstates")
+}
+#' @rdname sstates
+sstates.HMM <- function(x, e) {
+  fpass <- forward(x,e)
+  bpass <- backward(x,e,fpass$scalefactors)
+  return(fpass$alpha * bpass)
+}
+#' @rdname sstates
+sstates.matrix <- function(P, E, e, FS) {
   # Allocate the output matrix
   output <- matrix(0, ncol = length(e), nrow = nrow(P))
   # Set initial smoother vector and last smooth state

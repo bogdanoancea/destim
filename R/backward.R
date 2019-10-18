@@ -14,7 +14,7 @@ backward <- function(...) {
 #' @rdname backward
 backward.HMM <- function(x,y,sfactors) {
   TM <- getTM(x)
-  EM <- getEM(x)
+  EM <- emissions(x)
   beta <- matrix(0,nrow = nstates(x), ncol = length(y))
   svector <- rep(1,nstates(x))
   for (i in length(y):1) {

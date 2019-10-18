@@ -14,7 +14,7 @@ forward <- function(...) {
 #' @rdname forward
 forward.HMM <- function(x,y) {
   TM <- getTM(x)
-  EM <- getEM(x)
+  EM <- emissions(x)
   alpha <- matrix(0,nrow = nstates(x), ncol = length(y))
   sfactors <- numeric(length(y))
   svector <- getiparameters(x)
