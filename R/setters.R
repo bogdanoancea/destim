@@ -15,14 +15,14 @@
 
 `setsnames<-` <- function(x,value) {
   if (length(value) != nstates(x))
-    error("Wrong number of states")
+    stop("Wrong number of states")
   x$states$names <- value
   return(x)
 }
 
 `emissions<-` <- function(x, value) {
   if (nrow(value) != nstates(x))
-    error("The number of rows does not match the number of states.")
+    stop("The number of rows does not match the number of states.")
   x$emissions <- value
   return(x)
 }

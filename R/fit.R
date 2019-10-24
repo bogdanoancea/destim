@@ -14,7 +14,7 @@ fit <- function(x, e, init) {
     trmatrix <-
       trmatrix[apply(trmatrix,1,function(trow)
         sum(trow[-length(trow)]^2) != 0), ]
-    trmatrix <- unique(trmatrix)
+    trmatrix <- funique(trmatrix)
     ui <- trmatrix[, -ncol(trmatrix), drop = FALSE]
     ci <- -trmatrix[, ncol(trmatrix)]
     ui <- rbind(ui, -trmatrix[, -ncol(trmatrix), drop = FALSE])

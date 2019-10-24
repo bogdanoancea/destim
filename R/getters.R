@@ -78,7 +78,7 @@ getTM <- function(x) {
 #' @rdname getTM
 getTM.HMM <- function(x) {
   if (is.null(x$parameters))
-     error(paste0("[destim::getTM] Parameters of the model are ",
+     stop(paste0("[destim::getTM] Parameters of the model are ",
       "required to get the transitions matrix"))
   TM <- matrix(0,nrow = nstates(x), ncol = nstates(x))
   for (i in 1:ntransitions(x))
