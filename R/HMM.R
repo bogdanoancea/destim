@@ -92,8 +92,7 @@ HMM.integer <- function(S, TL, CT, EM = NULL) {
     CT <- rbind(CT, BCT)
   }
   # Remove possible duplicates
-  CT <- funique(CT)
-
+  # TODO
 
   output <- list(states = list(names = as.character(1:S),
                                coordinates = NULL),

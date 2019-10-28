@@ -1,0 +1,39 @@
+---
+title: "Introduction to destim package"
+author: "Luis Sanguiao"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+This vignette contains an introduction to *destim*: its main purpose, syntax and some technical details of its internal behaviour. Some basic knowledge about Hidden Markov Models would is useful to understand how the package works, but not essential to follow this vignette.
+
+***
+
+##Location of devices
+
+##Syntax and basic usage
+Obviously, the first step is to create a model. In *destim*, the primary model creator is the function HMM.
+```{r, echo=FALSE}
+library(destim, warn.conflicts = FALSE)
+```
+```{r}
+model <- HMM(5L)
+```
+The model
+
+```{r}
+nstates(model)
+```
+
+##How it works
