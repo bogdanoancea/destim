@@ -16,11 +16,29 @@ knitr::opts_chunk$set(
 )
 ```
 
-This vignette contains an introduction to *destim*: its main purpose, syntax and some technical details of its internal behaviour. Some basic knowledge about Hidden Markov Models would is useful to understand how the package works, but not essential to follow this vignette.
+This vignette contains an introduction to *destim*: its main purpose, syntax and some technical details of its internal behaviour. Some basic knowledge about Hidden Markov Models would be useful to understand how the package works, but not essential to follow this vignette.
 
 ***
 
 ##Location of devices
+
+### Introduction
+
+### The model
+We propose a Hidden Markov model to describe the behaviour of the device holders. Those models are quite general and flexible, can be made simple or as complex as wished. Unlike usual, we are not going to estimate the emissions probabilities, which we consider known.
+
+As we are mainly interested in estimate their location, and observation events are expected to give mostly information about it,location is a natural choice as state of the model. Since we are considering a tessellation of the map, each possible state would be a tile.
+
+While this could be the simpler approach, it is important to note that more complexity in the state-space might be useful. For example, we might want to represent a car moving north in a highway and a car moving south in the same tile (the tile contains both lanes) by different states, as they are expected to go next to different tiles.
+
+So, if we denote by $n$ the number of tiles, we are going to have not less than $n$ states, and possibly more, so let us say we have $O(n)$ states. In a Hidden Markov model, this means that we have $O(n^2)$ transition probabilities to estimate. Of course, this is not viable, so we are going to fix to zero all transition probabilities to non-contiguous tiles.
+
+Note that in practice, we can do this without losing generality, because given an upper bound for speed $V$ and a lower bound $E$ for the distance between non-contiguous tiles, we can set $\Delta t = \frac{E}{V}$ and the *jump* will no longer be possible.
+
+Now, we have $O(n)$ non zero transitions, which is more affordable, but still very expensive. If we want to reduce this complexity, one option is to classify the states in a certain number of classes, and constrain the transition probabilities to be equal for tiles of the same kind. This is only possible for periodic tesselations, so it is a strong argument to use periodic tesselations better than other possible choices (Voronoi, BSA, etc.). This is not a limitation of the package though, so it is still possible to estimate models based in non-periodic tilings, but $O(n)$ parameters would have to be estimated. In practice, the package allows any linear constraint between the transition probabilities.
+
+So, we can use constraints to reduce the number of parameters as much as wanted. It is a good idea to keep small the number of (free) parameters: on one hand the likelihood optimization becomes less computationally expensive and on the other hand we get a more parsimonious model.
+
 
 ##Syntax and basic usage
 Obviously, the first step is to create a model. In *destim*, the primary model creator is the function HMM.
