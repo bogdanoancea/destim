@@ -18,9 +18,8 @@ knitr::opts_chunk$set(
 
 This vignette contains an introduction to *destim*: its main purpose, syntax and some technical details of its internal behaviour. Some basic knowledge about Hidden Markov Models would be useful to understand how the package works, but not essential to follow this vignette.
 
-***
 
-##Location of devices
+## Location of devices
 
 ### Introduction
 
@@ -40,27 +39,51 @@ Now, we have $O(n)$ non zero transitions, which is more affordable, but still ve
 So, we can use constraints to reduce the number of parameters as much as wanted. It is a good idea to keep small the number of (free) parameters: on one hand the likelihood optimization becomes less computationally expensive and on the other hand we get a more parsimonious model.
 
 ### Fitting the model
-Once we have defined an appropiate model for our problem, the next step is to estimate the (hopefully few) free parameters. As has been already stated, emissions are known, so there are no emission parameters to fit. The initial state is either fixed or set to stationary, so the only parameters to fit in practice are the probabilities of transition.
+Once we have defined an appropiate model for our problem, the next step is to estimate the (hopefully few) free parameters. As has been already stated, emissions are known, so there are no emission parameters to fit. The initial state is either fixed or set to steady state, so the only parameters to fit in practice are the probabilities of transition.
 
 The method used to estimate the parameters is maximum likelihood, and the forward algorithm computes the (minus) log-likelihood. A constrained optimization is then done. Note that EM algorithm is generally not a good choice for constrained problems, so it is not used in the package.
 
-To get the objective function and the constraints, some previous steps are required to reduce the dimension of the search space. Let $P$ be the column vector of transition probabilities. The linear constraints can be represented as the augmented matrix $(A \vert B)$ so that $AP = B$. After a pivoted QR decomposition is done, we have $R \tilde{P} = Q' B$ where $\tilde{P}$ is a permutation of $P$ and $R$ an upper triangular matrix with non decreasing diagonal elements. Moreover we can express $R$ in blocks as
+To get the objective function and the constraints, some previous steps are required to reduce the dimension of the search space. Let $P$ be the column vector of transition probabilities. The linear constraints can be represented as the augmented matrix $(A \vert B)$ so that $AP = B$. After a pivoted QR decomposition is done, we have $R \tilde{P} = Q' B$ where $\tilde{P}$ is a permutation of $P$ and $R$ an upper triangular matrix with non decreasing diagonal elements. Moreover we can express $R$ in blocks as:
 $$
-\left(
-\begin{array}{c | c }
+R = \left(
+\begin{array}{c c }
 R_{11} & R_{12} \\
-\hline
 0 & 0
 \end{array}
 \right)
 $$
-where $R_{11}$ is a full-rank square upper diagonal matrix. Note that the last columns of $Q'B$ are expected to be zero too, otherwise the constraints can not be fulfilled. Let $c_2$ denote the number of columns of $R_{12}$.The last $c_2$ variables in $\tilde{P}$ are taken as the free parameters. 
+where $R_{11}$ is a full-rank square upper diagonal matrix. Accordingly we can define blocks for $Q$ and $\tilde{P}$:
+\begin{align}
+Q & = \left( 
+\begin{array}{c c}
+Q_1 & Q_2
+\end{array}
+\right) \\
 
+\tilde{P} & = \left(
+\begin{array}{c}
+\tilde{P}_1 \\
+\tilde{P}_2
+\end{array}
+\right)
+\end{align}
 
+Note that $Q_2' B = 0$, otherwise the constraints can not be fulfilled. The variables in $\tilde{P}_2$ are taken as the free parameters, because being $R_{11}$ full-rank, we have $\tilde{P}_1 = R_{11}^{-1}(Q_1'B - R_{12} \tilde{P}_2)$ so $\tilde{P}_2$ determines $\tilde{P}_1$. These free parameters are transition probabilities and fully determine the transition matrix and thus the likelihood. Moreover, the equality constraints have vanished and now we only have to impose that transition probabilities are between zero and one. Obviously those are linear constraints for $\tilde{P}_2$, so all we have to do is a linear constrained non-linear optimization in the same space. The linear contraints may seem to be a lot, but in practice, a good modeling will make most of the constraints equal, as most of the transition probabilities are going to be equal.
+
+Usually, algorithms for constrained optimization will require an initial value in the interior of the feasible region. To get such initial value, the following algorithm is used:
+
+1. Set transition probabilities to independent uniform $(0,1)$ random variables.
+2. Now the constraints do not hold, so the closest point in the constrained space is got through Lagrange multipliers.
+3. Now some of the probabilities might be greater than one or smaller than zero. Those are set once again to independent uniforms.
+4. Repeat steps 2 and 3 till all transition probabilities are between zero and one.
+
+As already stated, the initial state is set to steady if not fixed. The steady state is calculated as the (first) eigenvector that its eigenvalue is close enough to one. This should be enough because these Markov chains are expected to be both irreducible and aperiodic, otherwise we would have strange movement restrictions.
 
 ### The outputs
+s
 
-##Syntax and basic usage
+## Syntax and basic usage
+
 Obviously, the first step is to create a model. In *destim*, the primary model creator is the function HMM.
 ```{r, echo=FALSE}
 library(destim, warn.conflicts = FALSE)
@@ -74,4 +97,5 @@ The model
 nstates(model)
 ```
 
-##How it works
+## How it works
+s
