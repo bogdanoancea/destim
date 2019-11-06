@@ -35,10 +35,30 @@ So, if we denote by $n$ the number of tiles, we are going to have not less than 
 
 Note that in practice, we can do this without losing generality, because given an upper bound for speed $V$ and a lower bound $E$ for the distance between non-contiguous tiles, we can set $\Delta t = \frac{E}{V}$ and the *jump* will no longer be possible.
 
-Now, we have $O(n)$ non zero transitions, which is more affordable, but still very expensive. If we want to reduce this complexity, one option is to classify the states in a certain number of classes, and constrain the transition probabilities to be equal for tiles of the same kind. This is only possible for periodic tesselations, so it is a strong argument to use periodic tesselations better than other possible choices (Voronoi, BSA, etc.). This is not a limitation of the package though, so it is still possible to estimate models based in non-periodic tilings, but $O(n)$ parameters would have to be estimated. In practice, the package allows any linear constraint between the transition probabilities.
+Now, we have $O(n)$ non zero transitions, which is more affordable, but still very expensive. If we want to reduce this complexity, one option is to classify the states in a certain number of classes, and constrain the transition probabilities to be equal for tiles of the same kind. This only makes sense for periodic tesselations, so it is a strong argument to use periodic tesselations better than other possible choices (Voronoi, BSA, etc.). This is not a limitation of the package though, so it is still possible to estimate models based in non-periodic tilings, but $O(n)$ parameters would have to be estimated. In practice, the package allows any linear constraint between the transition probabilities.
 
 So, we can use constraints to reduce the number of parameters as much as wanted. It is a good idea to keep small the number of (free) parameters: on one hand the likelihood optimization becomes less computationally expensive and on the other hand we get a more parsimonious model.
 
+### Fitting the model
+Once we have defined an appropiate model for our problem, the next step is to estimate the (hopefully few) free parameters. As has been already stated, emissions are known, so there are no emission parameters to fit. The initial state is either fixed or set to stationary, so the only parameters to fit in practice are the probabilities of transition.
+
+The method used to estimate the parameters is maximum likelihood, and the forward algorithm computes the (minus) log-likelihood. A constrained optimization is then done. Note that EM algorithm is generally not a good choice for constrained problems, so it is not used in the package.
+
+To get the objective function and the constraints, some previous steps are required to reduce the dimension of the search space. Let $P$ be the column vector of transition probabilities. The linear constraints can be represented as the augmented matrix $(A \vert B)$ so that $AP = B$. After a pivoted QR decomposition is done, we have $R \tilde{P} = Q' B$ where $\tilde{P}$ is a permutation of $P$ and $R$ an upper triangular matrix with non decreasing diagonal elements. Moreover we can express $R$ in blocks as
+$$
+\left(
+\begin{array}{c | c }
+R_{11} & R_{12} \\
+\hline
+0 & 0
+\end{array}
+\right)
+$$
+where $R_{11}$ is a full-rank square upper diagonal matrix. Note that the last columns of $Q'B$ are expected to be zero too, otherwise the constraints can not be fulfilled. Let $c_2$ denote the number of columns of $R_{12}$.The last $c_2$ variables in $\tilde{P}$ are taken as the free parameters. 
+
+
+
+### The outputs
 
 ##Syntax and basic usage
 Obviously, the first step is to create a model. In *destim*, the primary model creator is the function HMM.
