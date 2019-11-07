@@ -128,7 +128,35 @@ model <- addconstraint(model,c(1,2))
 transitions(model)
 constraints(model)
 ```
-Now it becomes possible to transition from state 1 to state 2, and in consequence, the first constraint is changed, so we have $p_{11} + p_{12} = 1$ instead $p_{11} = 1$. Moreover, we have added an equality constraint: the first transition probability is equal to the second one. In the matrix of transitions we can see that those first transitions are the transition from one to two and from one to one respectively. The new can be seen in the last row of the new constraints matrix.
+Now it becomes possible to transition from state 1 to state 2, and in consequence, the first constraint is changed, so we have $p_{11} + p_{12} = 1$ instead $p_{11} = 1$. Moreover, we have added an equality constraint: the first transition probability is equal to the second one. In the matrix of transitions we can see that those first transitions are the transition from one to two and from one to one respectively. The new can be seen in the last row of the new constraints matrix. The constraints to add can also be expressed as the rows of the constraints matrix we want to append.
+
+The emission probabilities are also stored in a matrix, where the element $e_{i j}$ is the probability of the event $j$ to happen, knowing that the device is placed in tile $i$. Of course, the number of possible events is expected to be much smaller than the number of actually observed events. It is possible, though, that the number of columns of the emissions matrix matches the number of actually observed events. This way we do not save memory with the matrix, but it allows us to do the estimations even for a continuous space of observable events.
+
+Note that, in the particular, if any possible event corresponds to a column of the matrix of emissions, each row sums to one. This does not happen in general, as the columns do not need to be exhaustive, and in the continous case they do not even can.
+
+As we have not specified the emission probabilities, they are set to NULL by default.
+```{r}
+emissions(model)
+emissions(model)<-matrix(c(0.3, 0.3, 0.7, 0.9, 0.9,
+                           0.7, 0.7, 0.3, 0.1, 0.1),
+                         nrow = 5, ncol = 2)
+emissions(model)
+```
+Emission probabilities are expected to be computed separately, so the model is ready to directly insert the emissions matrix.
+
+Of course, in practice models will have many states and will be created automatically. While the purpose of this package is estimation and not automatic modeling (at least for the moment), some functions have been added to ease the construction of example models.
+
+The function HMMrectangle creates a rectangle model. This model represents a rectangular grid with square tiles, where you can only stay in the same tile or go to a contiguous tile. This means that there are nine non zero transition probabilities by tile. Moreover, horizontal and vertical transitions have the same probability, and diagonal transitions also have the same probability (but different to vertical and horizontal).
+
+As obvious, the rectangle model only have two free parameters to fit, but the number of transitions can be very high even for small rectangles.
+```{r}
+model <- HMMrectangle(10,10)
+ntransitions(model)
+nconstraints(model)
+```
+A small rectangle of 10x10 tiles has 784 transitions! Fortunatelly, we only need to fit two parameters. Note that the number of constraints plus the number of free parameters agrees with the number of transitions.
+
+A very simple function to create emissions matrices is also provided. It is called createEM and the observation events are just connections to a specific tower.  
 
 ### Model fitting
 
