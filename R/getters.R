@@ -22,11 +22,18 @@ nconstraints <- function(x) {
 nconstraints.HMM <- function(x) return(nrow(x$constraints))
 #' Matrix of constraints getter
 #'
-getconstraints <- function(x) {
-  UseMethod("getconstraints")
+constraints <- function(x) {
+  UseMethod("constraints")
 }
-#' @rdname getconstraints
-getconstraints.HMM <- function(x) return(x$constraints)
+#' @rdname constraints
+constraints.HMM <- function(x) return(x$constraints)
+#' Transitions getter
+#'
+transitions <- function(x) {
+  UseMethod("transitions")
+}
+#' @rdname transitions
+transitions.HMM <- function(x) return(x$transitions)
 #' Initial parameters getter
 #'
 getiparameters <- function(x) {
@@ -77,7 +84,7 @@ getTM <- function(x) {
 }
 #' @rdname getTM
 getTM.HMM <- function(x) {
-  if (is.null(x$parameters))
+  if (is.null(x$parameters$transitions))
      stop(paste0("[destim::getTM] Parameters of the model are ",
       "required to get the transitions matrix"))
   TM <- matrix(0,nrow = nstates(x), ncol = nstates(x))

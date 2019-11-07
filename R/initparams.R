@@ -28,7 +28,7 @@ initparams <- function(x) {
   # subspace using Lagrange multipliers
   trmatrix <- matrix(as.logical(diag(ntransitions(x))),
                      ncol = ntransitions(x))
-  CT <- getconstraints(x)
+  CT <- constraints(x)
   eqcon <- apply(CT, 1, function(irow)
     (irow[ntransitions(x) + 1] == 0) &&
       (sum(irow != 0) == 2) &&

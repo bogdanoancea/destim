@@ -20,11 +20,17 @@ This vignette contains an introduction to *destim*: its main purpose, syntax and
 
 
 ## Location of devices
+This section contains a brief explanation about the intended use of the package and some remarks on the methodology.
 
 ### Introduction
+This package purpose is to estimate the spatial distribution of the number of devices, which corresponds to an intermediate step in the general methodology framework of the ESSnet Big Data II, Workpackage I (cite).
+
+The network events are the result of the constant interaction between a mobile device and a telecommunication network. While the information comprised in these events can be quite complex (and rich), since we are mostly interested in geolocation, a space likelihood that summarizes the event is all we need. The transformation from the network events to the likelihood is quite technical and clearly corresponds to the mobile network operators (MNO), see (cite) for more details.
+
+By space likelihood, we mean the likelihood of the event conditioned on the position of the device. It is quite obvious to identify this likelihood with the emission probabilities of a Hidden Markov model.
 
 ### The model
-We propose a Hidden Markov model to describe the behaviour of the device holders. Those models are quite general and flexible, can be made simple or as complex as wished. Unlike usual, we are not going to estimate the emissions probabilities, which we consider known.
+So, we propose a Hidden Markov model to describe the movement of the devices. Those models are quite general and flexible, can be made simple or as complex as wished. Unlike usual, we are not going to estimate the emissions probabilities, that as said we consider known.
 
 As we are mainly interested in estimate their location, and observation events are expected to give mostly information about it,location is a natural choice as state of the model. Since we are considering a tessellation of the map, each possible state would be a tile.
 
@@ -80,22 +86,51 @@ Usually, algorithms for constrained optimization will require an initial value i
 As already stated, the initial state is set to steady if not fixed. The steady state is calculated as the (first) eigenvector that its eigenvalue is close enough to one. This should be enough because these Markov chains are expected to be both irreducible and aperiodic, otherwise we would have strange movement restrictions.
 
 ### The outputs
-s
+Once the model has been fit, we can estimate the smooth states by means of the forward-backward algorithm. The smooth states are the mass probability function of the states given the observed data (and the model), thus they kind of summarize all the information available for a given time $t$. So one of the outputs of the package are the smooth states, that can be aggregated to get a space distribution of the number of devices (cite).
+
+The other main output of the package is the posterior joint mass probability function for two consecutive instants $t, t + \Delta t$ of the states. As it is a posterior probability, it is once again conditioned on all the information available, but it is more dynamic because its time reference is now an interval. A possible analogy would be the smooth positions and speeds of a particle. The former would correspond to position and the later to speed.
+
+Both outputs are needed to estimate the target population.
 
 ## Syntax and basic usage
+This section explains briefly the main functions of the package.
+
+### Modeling
 
 Obviously, the first step is to create a model. In *destim*, the primary model creator is the function HMM.
 ```{r, echo=FALSE}
 library(destim, warn.conflicts = FALSE)
 ```
 ```{r}
-model <- HMM(5L)
+model <- HMM(5)
 ```
-The model
+When the first parameter is a number, it contains the number of states, so we have five states. Since we have not specified a list of transitions, all states transition to themselves and so only five transitions too.
 
 ```{r}
 nstates(model)
+ntransitions(model)
+transitions(model)
 ```
+The transitions with non zero probability are represented by an integer matrix with two rows, where each column is a transition. The first column is the initial state and the second the final state. Of course, the states are represented by an integer number.
+
+Now, let us look at the constraints.
+```{r}
+constraints(model)
+```
+As we have not specified any constraints, one constraint by state is introduced, the sum of the transition probabilities fixed one initial state has to be one. Otherwise, the transition matrix would not be stochastic. In general, the package adjusts this specific kind of constraints automatically.
+
+The constraints are represented as the augmented matrix of a linear system of equations. The transition probabilities must fulfill the equations, with the same order as shown in transitions function. So the first coefficient in each row is for the transition probability of the transition shown in the first column of the matrix of transitions, and so on.
+
+Both transitions and constraints can be specified as parameters when creating the model. It is also possible to add transitions and constraints later.
+```{r}
+model <- addtransition(model,c(1,2))
+model <- addconstraint(model,c(1,2))
+transitions(model)
+constraints(model)
+```
+Now it becomes possible to transition from state 1 to state 2, and in consequence, the first constraint is changed, so we have $p_{11} + p_{12} = 1$ instead $p_{11} = 1$. Moreover, we have added an equality constraint: the first transition probability is equal to the second one. In the matrix of transitions we can see that those first transitions are the transition from one to two and from one to one respectively. The new can be seen in the last row of the new constraints matrix.
+
+### Model fitting
 
 ## How it works
 s
