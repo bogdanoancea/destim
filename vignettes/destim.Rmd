@@ -192,9 +192,18 @@ model <- fit(model, obs)
 rparams(model)
 logLik(model, obs)
 ```
-Despite the name, logLik returns minus the log-likelihood, so the smaller the better.
+Despite the name, logLik returns minus the log-likelihood, so the smaller the better. As in the example, it is possible to introduce missing values for the observations as *NA*.
 
 ### The final estimations
+Finally, the model is ready to produce some estimations. The main outputs of this package are the smooth states and the smooth consecutive pairwaise states (sometimes called $\xi_{i j}$ in the literature).
+
+The function sstates returns the smooth states as a matrix of *number of states* $\times$ *number of observations* (missing values included) dimensions. So each column represents the spatial distribution in its corresponding time slot.
+```{r}
+dim(sstates(model, obs))
+image(matrix(sstates(model, obs)[,4], ncol = 10))
+```
+
+The function scpstates returns the (smooth) joint mass probability 
 
 
 ## How it works

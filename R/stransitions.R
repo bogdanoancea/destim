@@ -11,11 +11,11 @@
 # FS: Filtered/predicted states as returned in fstates
 
 
-stransitions <- function(...) {
-  UseMethod("stransitions")
+scpstates <- function(...) {
+  UseMethod("scpstates")
 }
-#' @rdname sstates
-stransitions.HMM <- function(x, e) {
+#' @rdname scpstates
+scpstates.HMM <- function(x, e) {
   output <- matrix(0, nrow = nstates(x) ** 2, ncol = length(e) - 1)
   TM <- getTM(x)
   EM <- emissions(x)
