@@ -27,6 +27,13 @@ constraints <- function(x) {
 }
 #' @rdname constraints
 constraints.HMM <- function(x) return(x$constraints)
+#' Initial state parameters getter
+#'
+istates <- function(x) {
+  UseMethod("istates")
+}
+#' @rdname istates
+istates.HMM <- function(x) return(x$parameters$states)
 #' Transitions getter
 #'
 transitions <- function(x) {
@@ -34,13 +41,6 @@ transitions <- function(x) {
 }
 #' @rdname transitions
 transitions.HMM <- function(x) return(x$transitions)
-#' Initial parameters getter
-#'
-getiparameters <- function(x) {
-  UseMethod("getiparameters")
-}
-#' @rdname getiparameters
-getiparameters.HMM <- function(x) return(x$parameters$states)
 #' Reduced parameters getter
 rparams <- function(x) {
   UseMethod("rparams")

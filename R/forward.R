@@ -17,7 +17,7 @@ forward.HMM <- function(x,y) {
   EM <- emissions(x)
   alpha <- matrix(0,nrow = nstates(x), ncol = length(y))
   sfactors <- numeric(length(y))
-  svector <- getiparameters(x)
+  svector <- istates(x)
   for (i in 1:length(y)) {
     if (!is.na(y[i])) {
       svector <- svector * EM[,y[i]]

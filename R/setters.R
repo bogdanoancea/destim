@@ -26,3 +26,10 @@
   x$emissions <- value
   return(x)
 }
+
+`istates<-` <- function(x,value) {
+  if (length(value) != nstates(x))
+    stop("Wrong number of states")
+  x$parameters$states <- value
+  return(x)
+}

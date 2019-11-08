@@ -156,9 +156,46 @@ nconstraints(model)
 ```
 A small rectangle of 10x10 tiles has 784 transitions! Fortunatelly, we only need to fit two parameters. Note that the number of constraints plus the number of free parameters agrees with the number of transitions.
 
-A very simple function to create emissions matrices is also provided. It is called createEM and the observation events are just connections to a specific tower.  
+A very simple function to create emissions matrices is also provided. It is called createEM and the observation events are just connections to a specific tower. The input parameters are the dimensions of the rectangle, the location of towers (in grid units) and the distance decay function of the signal strength Martijn Tennekes (2018). In this case, each tile is required to be able to connect to at least one antenna, so no out of coverage tiles are allowed. Note that this is not a requirement for the model, just a limitation of createEM.
+```{r}
+tws <- matrix(c(3.2, 6.1, 2.2, 5.7, 5.9, 9.3, 5.4,
+                4.0, 2.9, 8.6, 6.9, 6.2, 9.7, 1.3),
+              nrow = 2, ncol = 7)
+S <- function(x) if (x > 5) return(0) else return(20*log(5/x))
+emissions(model)<-createEM(c(10,10), tws, S)
+dim(emissions(model))
+```
 
 ### Model fitting
+Once the model is defined, the next step is to fit its parameters, by constrained maximum likelihood. As already said, the optimizer usually requires an initial guess, so the function initparams obtains an initial random set of parameters.
+```{r}
+model <- initparams(model)
+all(model$parameters$transitions < 1)
+all(model$parameters$transitions > 0)
+range(constraints(model) %*% c(model$parameters$transitions, -1))
+```
+All transition probabilities are between zero and one and the constraints hold, but no observed data is used.
+
+The function minparams reduces the number of parameters of the model to the number of free parameters, as already explained.
+```{r}
+ntransitions(model)
+model <- minparams(model)
+rparams(model)
+```
+So, only two parameters are really needed! It is possible to assign values with rparams, as the optimizer does, but some transition probability might move outside the interval $[0,1]$. The optimization process avoids this problem constraining by linear inequalities.
+
+Now the model is ready to be fitted. Of course, the observed events are needed. Since we have the emissions matrix in the model, the observed events is just an integer vector, that refers to the appropiate column of the emissions matrix.
+```{r}
+obs <- c(1,2,NA,NA,NA,NA,7,7)
+logLik(model, obs)
+model <- fit(model, obs)
+rparams(model)
+logLik(model, obs)
+```
+Despite the name, logLik returns minus the log-likelihood, so the smaller the better.
+
+### The final estimations
+
 
 ## How it works
 s
