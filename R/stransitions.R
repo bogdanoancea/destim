@@ -24,14 +24,14 @@ scpstates.HMM <- function(x, e) {
   for (i in 2:length(e)) {
     if (is.na(e[i]))
       output[, i - 1] <-
-        fpass$scalefactors[i] * (TM *
-          (matrix(fpass$alpha[, i - 1], ncol = 1) %*%
-           matrix(bpass[, i], nrow = 1)) )[1:nrow(output)]
+        (TM * (matrix(fpass$alpha[, i - 1], ncol = 1) %*%
+        matrix(bpass[, i], nrow = 1)) )[1:nrow(output)] /
+        fpass$scalefactors[i]
     else
       output[, i - 1] <-
-        fpass$scalefactors[i] * (TM *
-          (matrix(fpass$alpha[, i - 1], ncol = 1) %*%
-           matrix(bpass[, i] * EM[,e[i]], nrow = 1)) )[1:nrow(output)]
+        (TM * (matrix(fpass$alpha[, i - 1], ncol = 1) %*%
+        matrix(bpass[, i] * EM[,e[i]], nrow = 1)) )[1:nrow(output)] /
+        fpass$scalefactors[i]
   }
   return(output)
 }
