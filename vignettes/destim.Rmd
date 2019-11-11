@@ -197,14 +197,35 @@ Despite the name, logLik returns minus the log-likelihood, so the smaller the be
 ### The final estimations
 Finally, the model is ready to produce some estimations. The main outputs of this package are the smooth states and the smooth consecutive pairwaise states (sometimes called $\xi_{i j}$ in the literature).
 
-The function sstates returns the smooth states as a matrix of *number of states* $\times$ *number of observations* (missing values included) dimensions. So each column represents the spatial distribution in its corresponding time slot.
+The function sstates returns the smooth states as a matrix of *number of states* $\times$ *number of observations* (missing values included) dimensions. So each column represents the space distribution in its corresponding time slot.
 ```{r}
 dim(sstates(model, obs))
 image(matrix(sstates(model, obs)[,4], ncol = 10))
 ```
 
-The function scpstates returns the (smooth) joint mass probability 
+The function scpstates returns the (smooth) joint probability mass function for consecutive states, analogous to the usually denoted $\xi_{i j}$ probabilities in the Baum-Welch algorithm (once convergence is achieved). This time, each column represents the space bi-variant distribution matrix as follows: the probability of the consecutive pair of states $(i,j)$ can be found in the row $400(i-1) + j$.
+```{r}
+dim(scpstates(model, obs))
+image(matrix(scpstates(model, obs)[,4], ncol = 100), xlim = c(0,1))
+```
 
+Both each row and each column of the previous image are bidimensional spaces, so it is difficult to visualize: we would need four dimensions instead two! Even so, it is easy to see a diagonal pattern, which is coherent with the transition matrix. The transition matrix only allows transitions to contiguous points, so it is *almost* diagonal. In consequence, so are the $\xi_{i j}$ probabilities.
 
-## How it works
-s
+## Some remarks about computational efficiency
+The package is not optimized yet, but some possible bottlenecks have been already noticed. In this section we are going to dicuss them.
+
+### Model construction
+As has been already stated, the package is not really ready for model construction, except for the function HMMrectangle, which serves only for toy models. While it is a slow function, its speed can be improved greatly using some compiled language. It is also an embarrassingly parallel problem, so it scales well. On the downside, its complexity increases with the number of states, which can be huge, as it is potentially the area of the country. While a device normally moves around a much smaller area, in practice we need to estimate the position for all the devices, so it is expected to be a very computationally demanding step.
+
+### Model initialization and parametrization
+The algorithm used to find an inital value for the optimizer, solves a linear system of equations at each step. While the order of the system grows with the number of transitions and constraints, in practice, most constraints state the equality between two transition probabilities. It is not difficult to get rid of one of the transitions and the constraint in those cases, so in practice the process scales very well for parsimonious models. The function in the package might seem a bit slow, but the elimination of constraints should be written in some compiled language and optimized.
+
+Mostly all said for initialization also goes for parametrization, where the QR decomposition is the *slow* step.
+
+### Forward-Backward algorithm
+While it is not implemented yet, the transition matrix can now be easily made sparse, which will improve greatly the computational efficiency of the algorithm. The algorithm is expected to scale well both in memory and speed, and can also be made parallel. As the forward part is used also for likelihood evaluation (the complete algorithm is used for smoothing), a highly efficient forward-backward algorithm is quite important. 
+
+### Likelihood optimization
+The purpose of all the previous steps is to make easier the task of the optimizer, so it should not be a problem if everything else is fine. In the package, there always exists one constraint by state to ensure that the probability of transition from that state to others (including itself) is one. This means that we can not have equalities between all transitions begining from one state and all transitions begining from another one, as the constraints would be an overdetermined system. In consequence, the constraint that probability transitions are between zero and one, appear multiple times for some transitions (same state transitions for HMMrectangle). 
+
+As explained before, it is better to have equality constraints, so in future versions of this package, sum-one constraints are going to be avoided when possible.
