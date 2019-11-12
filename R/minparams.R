@@ -34,7 +34,9 @@ minparams <- function(x) {
                MCT[,ncol(MCT), drop = FALSE])
   qrdecomp <- qr(MCT[, -ncol(MCT), drop = FALSE])
   MCT <- cbind(qr.R(qrdecomp), -t(qr.Q(qrdecomp)) %*% MCT[, ncol(MCT)])
-  MCT <- -solve(MCT[,1:nrow(MCT)],MCT[,-(1:nrow(MCT)), drop = FALSE])
+  MCT <- -solve(MCT[1:qrdecomp$rank,1:qrdecomp$rank],
+                MCT[1:qrdecomp$rank,-(1:qrdecomp$rank),
+                    drop = FALSE])
   MCT <- rbind(MCT, cbind(diag(length(qrdecomp$pivot) - nrow(MCT)),
                           rep(0,length(qrdecomp$pivot) - nrow(MCT))))
   trmatrix <- trmatrix[, qrdecomp$pivot] %*% MCT

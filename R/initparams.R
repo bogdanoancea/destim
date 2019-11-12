@@ -53,13 +53,14 @@ initparams <- function(x) {
   MCT <- CT[!eqcon, , drop = FALSE]
   MCT <- cbind(MCT[, -ncol(MCT), drop = FALSE] %*% trmatrix,
                MCT[,ncol(MCT), drop = FALSE])
+  MCT <- funique(MCT)
   eqsys <- cbind(matrix(0,nrow = nrow(MCT),
                         ncol = nrow(MCT)),
                  MCT)
   eqsys <- rbind(eqsys,
                  cbind(t(MCT[, -ncol(MCT)]),
-                       diag(ncol(trmatrix)) * 2,
-                       matrix(2 * transitions[cconstraints], ncol = 1)))
+                     diag(ncol(trmatrix)) * 2,
+                     matrix(2 * transitions[cconstraints], ncol = 1)))
   while (TRUE) {
   transitions <-
     solve(eqsys[,1:nrow(eqsys)], eqsys[,ncol(eqsys)])
