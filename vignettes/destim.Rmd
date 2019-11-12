@@ -7,6 +7,7 @@ vignette: >
   %\VignetteIndexEntry{Vignette Title}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
+bibliography: references.bib  
 ---
 
 ```{r setup, include = FALSE}
@@ -23,9 +24,9 @@ This vignette contains an introduction to *destim*: its main purpose, syntax and
 This section contains a brief explanation about the intended use of the package and some remarks on the methodology.
 
 ### Introduction
-This package purpose is to estimate the spatial distribution of the number of devices, which corresponds to an intermediate step in the general methodology framework of the ESSnet Big Data II, Workpackage I (cite).
+This package purpose is to estimate the spatial distribution of the number of devices, which corresponds to an intermediate step in the general methodology framework described in @WP5Deliverable1.3.
 
-The network events are the result of the constant interaction between a mobile device and a telecommunication network. While the information comprised in these events can be quite complex (and rich), since we are mostly interested in geolocation, a space likelihood that summarizes the event is all we need. The transformation from the network events to the likelihood is quite technical and clearly corresponds to the mobile network operators (MNO), see (cite) for more details.
+The network events are the result of the constant interaction between a mobile device and a telecommunication network. While the information comprised in these events can be quite complex (and rich), since we are mostly interested in geolocation, a space likelihood that summarizes the event is all we need. The transformation from the network events to the likelihood is quite technical and clearly corresponds to the mobile network operators (MNO), see @WP5Deliverable1.3 for more details.
 
 By space likelihood, we mean the likelihood of the event conditioned on the position of the device. It is quite obvious to identify this likelihood with the emission probabilities of a Hidden Markov model.
 
@@ -86,7 +87,7 @@ Usually, algorithms for constrained optimization will require an initial value i
 As already stated, the initial state is set to steady if not fixed. The steady state is calculated as the (first) eigenvector that its eigenvalue is close enough to one. This should be enough because these Markov chains are expected to be both irreducible and aperiodic, otherwise we would have strange movement restrictions.
 
 ### The outputs
-Once the model has been fit, we can estimate the smooth states by means of the forward-backward algorithm. The smooth states are the mass probability function of the states given the observed data (and the model), thus they kind of summarize all the information available for a given time $t$. So one of the outputs of the package are the smooth states, that can be aggregated to get a space distribution of the number of devices (cite).
+Once the model has been fit, we can estimate the smooth states by means of the forward-backward algorithm. The smooth states are the mass probability function of the states given the observed data (and the model), thus they kind of summarize all the information available for a given time $t$. So one of the outputs of the package are the smooth states, that can be aggregated to get a space distribution of the number of devices as explained in @WP5Deliverable1.3, section 4.2.
 
 The other main output of the package is the posterior joint mass probability function for two consecutive instants $t, t + \Delta t$ of the states. As it is a posterior probability, it is once again conditioned on all the information available, but it is more dynamic because its time reference is now an interval. A possible analogy would be the smooth positions and speeds of a particle. The former would correspond to position and the later to speed.
 
@@ -226,6 +227,11 @@ Mostly all said for initialization also goes for parametrization, where the QR d
 While it is not implemented yet, the transition matrix can now be easily made sparse, which will improve greatly the computational efficiency of the algorithm. The algorithm is expected to scale well both in memory and speed, and can also be made parallel. As the forward part is used also for likelihood evaluation (the complete algorithm is used for smoothing), a highly efficient forward-backward algorithm is quite important. 
 
 ### Likelihood optimization
-The purpose of all the previous steps is to make easier the task of the optimizer, so it should not be a problem if everything else is fine. In the package, there always exists one constraint by state to ensure that the probability of transition from that state to others (including itself) is one. This means that we can not have equalities between all transitions begining from one state and all transitions begining from another one, as the constraints would be an overdetermined system. In consequence, the constraint that probability transitions are between zero and one, appear multiple times for some transitions (same state transitions for HMMrectangle). 
+The purpose of all the previous steps is to make easier the task of the optimizer, so it should not be a problem if everything else is fine. Transition probabilities are required to be between zero and one, what in general means O(n) inequality constraints. A well specified parsimonious model, will often have a lot less constraints, as most of them are duplicated. As a reference, a HMMrectangle(20,20) has 3364 transitions and only 5 constraints are needed in practice.
 
-As explained before, it is better to have equality constraints, so in future versions of this package, sum-one constraints are going to be avoided when possible.
+Duplicated rows are eliminated from the matrix of inequality constraints before calling the optimizer, just in case some of the equalities between probabilities are consequence of the constraints of the model, but are not a specific constraint.
+
+Duplicate rows removal for a matrix of floats is done through a small C++ function, using RCpp package. The function is not very efficient, except when there are few different rows, and it will be replaced by a function that sorts the matrix and then removes duplicates in future versions of the package. 
+
+# References
+
