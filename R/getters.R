@@ -27,6 +27,14 @@ constraints <- function(x) {
 }
 #' @rdname constraints
 constraints.HMM <- function(x) return(x$constraints)
+#' Probability of transitions parameters getter
+#'
+ptransition <- function(x) {
+  UseMethod("ptransition")
+}
+#' @rdname ptransition
+ptransition.HMM <- function(x)
+  return(as.numeric(x$parameters$transitions))
 #' Initial state parameters getter
 #'
 istates <- function(x) {
