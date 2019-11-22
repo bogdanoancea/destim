@@ -2,7 +2,7 @@
 #'
 #' Fits the model by maximum likelihood
 #'
-fit <- function(x, e, init = FALSE) {
+fit <- function(x, e, init = FALSE, method = "constrOptim") {
   if (is.null(x$parameters$reducedparams)) {
     if (is.null(x$parameters$transitions))
       x <- initparams(x)
@@ -29,7 +29,32 @@ fit <- function(x, e, init = FALSE) {
       rparams(x) <- p
       return(logLik(x,e))
     }
-  rparams(x) <- constrOptim(rparams(x), ofun, NULL, ui, ci)$par
+  if (method == "constrOptim") {
+    if (!require("stats"))
+      stop("Package states required for constrOptim method")
+    rparams(x) <- stats::constrOptim(rparams(x), ofun, NULL,
+                    ui, ci)$par
+  }
+  else if (method == "donlp2") {
+    if (!require("Rdonlp2"))
+      stop("Package Rdonlp2 required for donlp2 method")
+    rparams(x) <-
+      Rdonlp2::donlp2NLP(rparams(x), ofun,
+        par.lower = rep(0, length(rparams(x))),
+        par.upper = rep(1, length(rparams(x))),
+        ineqA = trmatrix[, -ncol(trmatrix)],
+        ineqA.lower = -trmatrix[, ncol(trmatrix)],
+        ineqA.upper = 1 - trmatrix[, ncol(trmatrix)])$solution
+  }
+  else if (method == "solnp") {
+    if (!require("Rsolnp"))
+      stop("Package Rsolnp required for solnp method")
+    rparams(x) <- Rsolnp::solnp(rparams(x), ofun,
+                  ineqfun = function(MAT) trmatrix %*% c(MAT, 1),
+                  ineqLB = rep(0, nrow(trmatrix)),
+                  ineqUB = rep(1, nrow(trmatrix)))$pars
+  }
+  else stop(paste0("Method unknown: ", method))
 if (!init)
   x <- initsteady(x)
 return(x)
