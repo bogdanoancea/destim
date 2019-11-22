@@ -13,7 +13,10 @@ logLik <- function(...) {
 }
 #' @rdname logLik
 logLik.HMM <- function(x,e) {
-  return(-sum(log(forward(x,e)$scalefactors)))
+  output <- forward(x,e)$scalefactors
+  if (!all(output>0))
+    return(Inf)
+  return(-sum(log(output)))
 }
 #' @rdname logLik
 logLik.matrix <- function(P, E, e) {
