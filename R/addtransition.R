@@ -1,5 +1,30 @@
 #' Adds a transition to the model
 #'
+#' The specified transition is added to the model as a
+#' transition with non zero probability.
+#'
+#' Since the transition probabilities from the initial state of the
+#' newly specified transition still have to sum up to one, the
+#' correspondent constraint is modified accordingly.
+#'
+#' @param x A HMM object.
+#' @param t The transition, as a two dimensional integer vector.
+#' The first element is the number of the initial state and the
+#' second one the number of the final state.
+#'
+#' @return A HMM object similar to the input but with the additional
+#' transition.
+#'
+#' @seealso \link{addconstraint}
+#'
+#' @examples
+#' model <- HMM(3)
+#' model <- addtransition(model, c(1,2))
+#' model <- addtransition(model, c(2,3))
+#' model <- addtransition(model, c(3,1))
+#' transitions(model)
+#' constraints(model)
+#'
 addtransition <- function(x,t) {
   if (class(x) != "HMM")
     stop("This function only works with HMM objects.")
