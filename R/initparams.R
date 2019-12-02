@@ -73,7 +73,7 @@ initparams <- function(x) {
                         ncol = nrow(MCT)),
                  MCT)
   eqsys <- rbind(eqsys,
-                 cbind(t(MCT[, -ncol(MCT)]),
+                 cbind(t(MCT[, -ncol(MCT), drop = FALSE]),
                      diag(ncol(trmatrix)) * 2,
                      matrix(2 * transitions[cconstraints], ncol = 1)))
   while (TRUE) {
