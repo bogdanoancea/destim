@@ -15,7 +15,7 @@
 #' @return A HMM object similar to the input but with the additional
 #' transition.
 #'
-#' @seealso \link{addconstraint}
+#' @seealso \link{HMM}, \link{addconstraint}
 #'
 #' @examples
 #' model <- HMM(3)
@@ -28,6 +28,15 @@
 addtransition <- function(x,t) {
   if (class(x) != "HMM")
     stop("This function only works with HMM objects.")
+  if (length(t) < 2)
+    stop("Initial and final state must be specified.")
+  if (length(t) > 2) {
+    warning(paste0("Only initial and final state are required. ",
+                   "Remaining elements of the vector are ignored."))
+    t <- t[1:2]
+  }
+  if (any(apply(transitions(x), 2, function(z) all(z == t))))
+    stop("Transition already stated as having non zero probability.")
   TL <- x[["transitions"]]
   CT <- x[["constraints"]]
   CTrow <- which(sapply(1:nrow(CT), function(z) {
