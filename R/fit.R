@@ -2,7 +2,7 @@
 #'
 #' Fits the model by maximum likelihood
 #'
-fit <- function(x, e, init = FALSE, method = "constrOptim") {
+fit <- function(x, e, init = FALSE, method = "constrOptim", ...) {
   if (is.null(x$parameters$reducedparams)) {
     if (is.null(x$parameters$transitions))
       x <- initparams(x)
@@ -44,7 +44,7 @@ fit <- function(x, e, init = FALSE, method = "constrOptim") {
         par.upper = rep(1, length(rparams(x))),
         ineqA = trmatrix[, -ncol(trmatrix)],
         ineqA.lower = -trmatrix[, ncol(trmatrix)],
-        ineqA.upper = 1 - trmatrix[, ncol(trmatrix)])$solution
+        ineqA.upper = 1 - trmatrix[, ncol(trmatrix)], ...)$solution
   }
   else if (method == "solnp") {
     if (!require("Rsolnp"))
@@ -52,7 +52,7 @@ fit <- function(x, e, init = FALSE, method = "constrOptim") {
     rparams(x) <- Rsolnp::solnp(rparams(x), ofun,
                   ineqfun = function(MAT) trmatrix %*% c(MAT, 1),
                   ineqLB = rep(0, nrow(trmatrix)),
-                  ineqUB = rep(1, nrow(trmatrix)))$pars
+                  ineqUB = rep(1, nrow(trmatrix)), ...)$pars
   }
   else stop(paste0("Method unknown: ", method))
 if (!init)
