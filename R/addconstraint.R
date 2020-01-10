@@ -5,9 +5,9 @@
 #' If parameter ct is a matrix, it is expected to be a system of additional
 #' linear equalities that the model must fulfill. Thus, the new equations
 #' are added to the field constraints of the model.
-#' If parameter ct is a vector, it is expected to be a pair of transition
+#' If parameter ct is a vector, it is expected to be a set of transition
 #' probabilities indexed as in field transitions of the model. In this
-#' case the constraint added is the equality between both probabilities of
+#' case the constraint added is the equality between the refered probabilities of
 #' transition.
 #'
 #' Previous constraints of the model are preserved.
