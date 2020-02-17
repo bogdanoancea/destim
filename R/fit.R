@@ -2,7 +2,7 @@
 #'
 #' Fits the model by maximum likelihood
 #'
-fit <- function(x, e, init = FALSE, method = "constrOptim", ...) {
+fit <- function(x, e, sq = FALSE, init = FALSE, method = "constrOptim", ...) {
   if (is.null(x$parameters$reducedparams)) {
     if (is.null(x$parameters$transitions))
       x <- initparams(x)
@@ -22,12 +22,12 @@ fit <- function(x, e, init = FALSE, method = "constrOptim", ...) {
     ofun <- function(p) {
               rparams(x) <- p
               x <- initsteady(x)
-              return(logLik(x,e))
+              return(logLik(x,e, sq))
             }
   else
     ofun <- function(p) {
       rparams(x) <- p
-      return(logLik(x,e))
+      return(logLik(x,e, sq))
     }
   if (method == "constrOptim") {
     if (!require("stats"))

@@ -39,8 +39,10 @@ forward <- function(...) {
   UseMethod("forward")
 }
 #' @rdname forward
-forward.HMM <- function(x,y) {
+forward.HMM <- function(x,y, sq = FALSE) {
   TM <- getTM(x)
+  if (sq)
+    TM <- TM**2
   EM <- emissions(x)
   alpha <- matrix(0,nrow = nstates(x), ncol = length(y))
   sfactors <- numeric(length(y))

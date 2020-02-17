@@ -12,8 +12,8 @@ logLik <- function(...) {
   UseMethod("logLik")
 }
 #' @rdname logLik
-logLik.HMM <- function(x,e) {
-  output <- forward(x,e)$scalefactors
+logLik.HMM <- function(x,e, sq = FALSE) {
+  output <- forward(x,e, sq)$scalefactors
   if (!all(output>0))
     return(Inf)
   return(-sum(log(output)))
