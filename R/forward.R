@@ -57,5 +57,8 @@ forward.HMM <- function(x,y, sq = FALSE) {
     alpha[,i] <- svector
     svector <- svector %*% TM
   }
-  return(list(alpha = alpha, scalefactors = sfactors))
+  if (!sq)
+    return(list(alpha = alpha, scalefactors = sfactors))
+  else
+    return(list(alpha = alpha, scalefactors = c(sum(istates(x) ** 2), sfactors)))
 }

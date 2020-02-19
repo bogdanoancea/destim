@@ -34,5 +34,5 @@ duptest.HMM <- function(x, y1, y2) {
   x <- fit(x, set1, sq = TRUE)
   ll <- ll + logLik(x, set1, sq = TRUE)
   ll <- 2 * ll
-  return(list(LR = ll, df = length(set1) + length(rparams(x))))
+  return(list(LR = ll, df = length(set1) + 1 + length(rparams(x))))
 }
