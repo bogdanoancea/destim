@@ -79,16 +79,22 @@ HMM.integer <- function(S, TL, CT, EM = NULL, checks = TRUE) {
     stop("The list of transitions must contain exactly two rows.")
   if ((min(TL) < 1) || max(TL) > S)
     stop("The states are referenced by numbers from 1 to S")
-  # Remove possible duplicates
+
   if (checks)
-    TL <- t(unique(t(TL)))
+    if (anyDuplicated(t(TL)))
+      stop("Duplicates are not allowed in the list of transitions.")
+
   if (missing(CT))
     CT <- createBCT(TL, as.integer(S))
-  else {
-    if (ncol(CT) != ncol(TL) + 1)
-      stop(paste0("The number of columns of the constraints matrix ",
-                   "does not match the number of transitions."))
-  }
+
+  # Sort TL and CT if not already sorted
+  if (checks)
+    if (!is_sortedTL(TL)) {
+      idx <- orderTL(TL)
+      TL <- TL[, idx]
+      CT[, -ncol(CT)] <- CT[,idx]
+    }
+
   # If checks ...
   # Remove possible duplicates
   # ... TODO

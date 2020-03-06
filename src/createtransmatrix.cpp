@@ -14,7 +14,7 @@ typedef MSM::InnerIterator MSMIt;
 // duplicates
 
 // [[Rcpp::export]]
-NumericMatrix createtransmatrix(const SEXP & CT) {
+List createtransmatrix(const SEXP & CT) {
   const MSM mat(as<MSM> (CT));
   int i, j, k, l,eqvars[2];
 
@@ -62,7 +62,18 @@ NumericMatrix createtransmatrix(const SEXP & CT) {
   mat2.leftCols(mat2.cols() - 1) = mat.bottomRows(mat.rows() - i).leftCols(mat.cols() - 1) * trmatrix;
   mat2.rightCols(1) = mat.bottomRows(mat.rows() - i).rightCols(1);
 
+
   ColPivHouseholderQR<MatrixXd> decomp(mat2.leftCols(mat2.cols() - 1));
+  trmatrix = trmatrix * decomp.colsPermutation();
+  IntegerVector parnumber(trmatrix.cols() - decomp.rank());
+  for (k = decomp.rank(); k < trmatrix.cols(); ++k)
+    for (i = 0; i < trmatrix.rows(); ++i)
+      if (trmatrix.innerIndexPtr()[i] == k) {
+        parnumber(k - decomp.rank()) = i + 1;
+        break;
+      }
+
+
   mat2.rightCols(1) = - mat2.rightCols(1);
   mat2.leftCols(mat2.cols() - 1) = mat2.leftCols(mat2.cols() - 1) * decomp.colsPermutation();
   mat2.rightCols(mat2.cols() - decomp.rank()) = decomp.householderQ().transpose() * mat2.rightCols(mat2.cols() - decomp.rank());
@@ -73,5 +84,5 @@ NumericMatrix createtransmatrix(const SEXP & CT) {
     MatrixXd::Identity(mat2.cols() - decomp.rank() - 1, mat2.cols() - decomp.rank() - 1);
   transmatrix.bottomRightCorner(mat2.cols() - decomp.rank() - 1, 1) =
     MatrixXd::Zero(mat2.cols() - decomp.rank() - 1, 1);
-  return(wrap(trmatrix * decomp.colsPermutation() * transmatrix));
+  return(List::create(wrap(trmatrix * transmatrix), parnumber));
 }

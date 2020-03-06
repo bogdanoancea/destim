@@ -1,6 +1,7 @@
 #include <Rcpp.h>
 #include <cmath>
 #include <RcppEigen.h>
+#include <algorithm>
 
 using namespace Rcpp;
 using namespace Eigen;
@@ -11,7 +12,7 @@ using namespace std;
 // This is a very simple function to remove duplicates in a matrix
 // of float numbers. It only scales well when all but a few rows are
 // duplicates
-
+// [[Rcpp::plugins(cpp11)]]
 // [[Rcpp::export]]
 Eigen::SparseMatrix<double, Eigen::RowMajor> createBCT(const IntegerMatrix & TL, int S) {
   SparseMatrix<double, RowMajor> mat(S, TL.ncol() + 1);
@@ -98,4 +99,38 @@ Eigen::SparseMatrix<double, Eigen::RowMajor> createrectangleCT(const IntegerMatr
   mat.insert(k, mat.cols() - 1) = 1;
   mat.makeCompressed();
   return(mat);
+}
+
+// [[Rcpp::export]]
+bool is_sortedTL(const IntegerMatrix & TL) {
+  IntegerMatrix output(2, TL.cols());
+  vector<int> idx(TL.cols());
+
+  iota(idx.begin(), idx.end(), 0);
+
+  return is_sorted(idx.begin(), idx.end(), [&TL] (int i, int j) {
+    if (TL(1, i) == TL(1,j))
+      return (TL(0, i) < TL(0, j));
+    else
+      return (TL(1, i) < TL(1, j));
+  });
+}
+
+// [[Rcpp::export]]
+IntegerVector orderTL(const IntegerMatrix & TL) {
+  IntegerVector output(TL.cols());
+  vector<int> idx(TL.cols());
+
+  iota(idx.begin(), idx.end(), 0);
+
+  sort(idx.begin(), idx.end(), [&TL] (int i, int j) {
+    if (TL(1, i) == TL(1,j))
+      return (TL(0, i) < TL(0, j));
+    else
+      return (TL(1, i) < TL(1, j));
+  });
+  for(int i = 0; i < TL.cols(); ++i)
+    output(i) = idx.at(i) + 1;
+
+  return output;
 }
