@@ -2,33 +2,29 @@
 #'
 #' Fits the model by maximum likelihood
 #'
-fit <- function(x, e, sq = FALSE, init = FALSE, method = "constrOptim", ...) {
+fit <- function(x, e, init = FALSE, method = "constrOptim", ...) {
   if (is.null(x$parameters$reducedparams)) {
     if (is.null(x$parameters$transitions))
       x <- initparams(x)
     x <- minparams(x)
   }
-  trmatrix <-
-    gettransmatrix(x)[x$parameters$reducedparams$cconstraints, ]
-  trmatrix <-
-    trmatrix[apply(trmatrix,1,function(trow)
-      sum(trow[-length(trow)]^2) != 0), ]
-  trmatrix <- funique(trmatrix)
+  trmatrix <- createlconmatrix(x$constraints)
   ui <- trmatrix[, -ncol(trmatrix), drop = FALSE]
   ci <- -trmatrix[, ncol(trmatrix)]
   ui <- rbind(ui, -trmatrix[, -ncol(trmatrix), drop = FALSE])
   ci <- c(ci, trmatrix[, ncol(trmatrix)] - rep(1,length(ci)))
+  TM <- createTM(x$transitions, x$parameters$transitions, nstates(x))
   if (!init)
     ofun <- function(p) {
               rparams(x) <- p
               x <- initsteady(x)
-              return(logLik(x,e, sq))
+              return(logLik(x,e))
             }
   else
-    ofun <- function(p) {
-      rparams(x) <- p
-      return(logLik(x,e, sq))
-    }
+    ofun <- function(p) return(
+      floglik(TM, TM@x, p, x$parameters$reducedparams$transmatrix,
+              istates(x), emissions(x), as.integer(e) - 1L)
+    )
   if (method == "constrOptim") {
     if (!require("stats"))
       stop("Package states required for constrOptim method")

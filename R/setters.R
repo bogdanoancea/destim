@@ -21,6 +21,8 @@
 }
 
 `emissions<-` <- function(x, value) {
+  if (class(value) != "dgCMatrix")
+    stop("The value is suposed to be of class dgCMatrix.")
   if (nrow(value) != nstates(x))
     stop("The number of rows does not match the number of states.")
   x$emissions <- value

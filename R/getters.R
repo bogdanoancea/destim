@@ -95,9 +95,6 @@ getTM.HMM <- function(x) {
   if (is.null(x$parameters$transitions))
      stop(paste0("[destim::getTM] Parameters of the model are ",
       "required to get the transitions matrix"))
-  TM <- matrix(0,nrow = nstates(x), ncol = nstates(x))
-  for (i in 1:ntransitions(x))
-      TM[x$transitions[1L,i],
-          x$transitions[2L,i]] <- x$parameters$transitions[i]
+  TM <- createTM(x$transitions, x$parameters$transitions, nstates(x))
   return(TM)
 }

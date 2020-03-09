@@ -24,7 +24,7 @@ double floglik(SEXP & TM, Eigen::Map<Eigen::VectorXd> values, const Eigen::Map<E
   svector = svector / isum;
 
   for (int i = 1; i < obs.length(); ++i) {
-    svector = tmat * svector;
+    svector = tmat.transpose() * svector;
     if (!IntegerVector::is_na(obs(i))) {
       svector = svector.cwiseProduct(emat.col(obs(i)));
       isum = svector.sum();
