@@ -15,11 +15,10 @@ fit <- function(x, e, init = FALSE, method = "constrOptim", ...) {
   ci <- c(ci, trmatrix[, ncol(trmatrix)] - rep(1,length(ci)))
   TM <- createTM(x$transitions, x$parameters$transitions, nstates(x))
   if (!init)
-    ofun <- function(p) {
-              rparams(x) <- p
-              x <- initsteady(x)
-              return(logLik(x,e))
-            }
+    ofun <- function(p) return(
+      floglik(TM, TM@x, p, x$parameters$reducedparams$transmatrix,
+              createsteady(TM), emissions(x), as.integer(e) - 1L)
+    )
   else
     ofun <- function(p) return(
       floglik(TM, TM@x, p, x$parameters$reducedparams$transmatrix,
