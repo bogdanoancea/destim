@@ -109,10 +109,10 @@ bool is_sortedTL(const IntegerMatrix & TL) {
   iota(idx.begin(), idx.end(), 0);
 
   return is_sorted(idx.begin(), idx.end(), [&TL] (int i, int j) {
-    if (TL(1, i) == TL(1,j))
-      return (TL(0, i) < TL(0, j));
-    else
+    if (TL(0, i) == TL(0,j))
       return (TL(1, i) < TL(1, j));
+    else
+      return (TL(0, i) < TL(0, j));
   });
 }
 
@@ -124,10 +124,10 @@ IntegerVector orderTL(const IntegerMatrix & TL) {
   iota(idx.begin(), idx.end(), 0);
 
   sort(idx.begin(), idx.end(), [&TL] (int i, int j) {
-    if (TL(1, i) == TL(1,j))
-      return (TL(0, i) < TL(0, j));
-    else
+    if (TL(0, i) == TL(0,j))
       return (TL(1, i) < TL(1, j));
+    else
+      return (TL(0, i) < TL(0, j));
   });
   for(int i = 0; i < TL.cols(); ++i)
     output(i) = idx.at(i) + 1;

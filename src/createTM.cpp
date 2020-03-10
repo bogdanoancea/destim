@@ -13,7 +13,7 @@ using namespace std;
 // duplicates
 
 // [[Rcpp::export]]
-Eigen::SparseMatrix<double> createTM(const IntegerMatrix & TL, const NumericVector & transitions, const int & states) {
+Eigen::SparseMatrix<double, Eigen::RowMajor> createTM(const IntegerMatrix & TL, const NumericVector & transitions, const int & states) {
   int i;
 
   typedef Triplet<double> T;

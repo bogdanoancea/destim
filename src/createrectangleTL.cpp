@@ -9,10 +9,10 @@ using namespace Rcpp;
 // [[Rcpp::export]]
 IntegerMatrix createrectangleTL(int x, int y) {
   IntegerMatrix mat(2, 9*x*y - 6*x - 6*y + 4);
-  int i, j, inci, incj, k = 0;
 
-  for (j = 0; j < y; ++j)
-    for (i = 0; i < x; ++i)
+  int i, j, inci, incj, k = 0;
+  for (i = 0; i < x; ++i)
+    for (j = 0; j < y; ++j)
       for (inci = -1; inci <= 1; ++inci)
         for (incj = -1; incj <= 1; ++incj)
           if ((i + inci >= 0) && (i + inci < x) && (j + incj >= 0) && (j + incj < y)) {

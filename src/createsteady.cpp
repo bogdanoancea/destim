@@ -5,7 +5,7 @@
 using namespace Rcpp;
 using namespace Eigen;
 using namespace std;
-typedef Eigen::MappedSparseMatrix<double> MSM;
+typedef Eigen::MappedSparseMatrix<double, Eigen::RowMajor> MSM;
 
 
 // This is a very simple function to remove duplicates in a matrix
@@ -15,9 +15,9 @@ typedef Eigen::MappedSparseMatrix<double> MSM;
 // [[Rcpp::export]]
 NumericVector createsteady(const SEXP & TM) {
   const MSM tmat(as<MSM> (TM));
-  SparseMatrix<double, RowMajor> A(tmat.rows(), tmat.cols());
+  SparseMatrix<double> A(tmat.rows(), tmat.cols());
   VectorXd x(tmat.rows());
-  SparseLU<SparseMatrix<double>, COLAMDOrdering<int> >   solver;
+  SparseLU<SparseMatrix<double, RowMajor>, COLAMDOrdering<int> >   solver;
   A.setIdentity();
   A = tmat.transpose() - A;
   x(x.size() - 1) = 1.0 / A.cols();
