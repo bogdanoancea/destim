@@ -11,9 +11,9 @@ typedef Eigen::MappedSparseMatrix<double> MSM2;
 // [[Rcpp::export]]
 double floglik(SEXP & TM, Eigen::Map<Eigen::VectorXd> values, const Eigen::Map<Eigen::VectorXd> rparams,
                          const Eigen::Map<Eigen::MatrixXd> transmatrix, const Eigen::Map<Eigen::VectorXd> init,
-                         SEXP & EM, IntegerVector & obs) {
+                         const SEXP & EM, const IntegerVector & obs) {
   MSM tmat(as<MSM> (TM));
-  MSM2 emat(as<MSM2> (EM));
+  const MSM2 emat(as<MSM2> (EM));
   SparseVector<double> svector;
   double isum, output = 0;
 

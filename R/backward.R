@@ -12,17 +12,6 @@ backward <- function(...) {
   UseMethod("backward")
 }
 #' @rdname backward
-backward.HMM <- function(x,y,sfactors) {
-  TM <- getTM(x)
-  EM <- emissions(x)
-  beta <- matrix(0,nrow = nstates(x), ncol = length(y))
-  svector <- rep(1,nstates(x))
-  for (i in length(y):1) {
-    beta[,i] <- svector
-    if (!is.na(y[i]))
-      svector <- svector * EM[,y[i]]
-    svector <- TM %*% svector
-    svector <- svector / sfactors[i]
-  }
-  return(beta)
-}
+backward.HMM <- function(x,y,sfactors) return (
+  fbackward(getTM(model), emissions(model), as.integer(y) - 1L, sfactors)
+  )

@@ -21,17 +21,8 @@ scpstates.HMM <- function(x, e) {
   EM <- emissions(x)
   fpass <- forward(x,e)
   bpass <- backward(x,e,fpass$scalefactors)
-  for (i in 2:length(e)) {
-    if (is.na(e[i]))
-      output[, i - 1] <-
-        (TM * (matrix(fpass$alpha[, i - 1], ncol = 1) %*%
-        matrix(bpass[, i], nrow = 1)) )[1:nrow(output)] /
-        fpass$scalefactors[i]
-    else
-      output[, i - 1] <-
-        (TM * (matrix(fpass$alpha[, i - 1], ncol = 1) %*%
-        matrix(bpass[, i] * EM[,e[i]], nrow = 1)) )[1:nrow(output)] /
-        fpass$scalefactors[i]
-  }
-  return(output)
+
+  return(
+    fscpstates(TM, fpass$alpha, bpass, fpass$scalefactors, EM, as.integer(e) - 1L)
+  )
 }

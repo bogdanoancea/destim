@@ -29,9 +29,9 @@
 #'
 #' @examples
 #' model <- HMMrectangle(3,3)
-#' emissions(model) <- matrix(c(1, 1, 0.5, 1, 0.5, 0, 0.5, 0, 0,
+#' emissions(model) <- Matrix(c(1, 1, 0.5, 1, 0.5, 0, 0.5, 0, 0,
 #'                              0, 0, 0.5, 0, 0.5, 1, 0.5, 1, 1),
-#'                              ncol = 2)
+#'                              ncol = 2, sparse = TRUE)
 #' model <- initparams(model)
 #' forward(model, c(1,2,1))
 
@@ -39,26 +39,7 @@ forward <- function(...) {
   UseMethod("forward")
 }
 #' @rdname forward
-forward.HMM <- function(x,y, sq = FALSE) {
-  TM <- getTM(x)
-  if (sq)
-    TM <- TM**2
-  EM <- emissions(x)
-  alpha <- matrix(0,nrow = nstates(x), ncol = length(y))
-  sfactors <- numeric(length(y))
-  svector <- istates(x)
-  for (i in 1:length(y)) {
-    if (!is.na(y[i])) {
-      svector <- svector * EM[,y[i]]
-      sfactors[i] <- sum(svector)
-      svector <- svector / sum(svector)
-    }
-    else sfactors[i] <- 1
-    alpha[,i] <- svector
-    svector <- svector %*% TM
-  }
-  if (!sq)
-    return(list(alpha = alpha, scalefactors = sfactors))
-  else
-    return(list(alpha = alpha, scalefactors = c(sum(istates(x) ** 2), sfactors)))
-}
+forward.HMM <- function(x,y) return(
+  fforward(getTM(model), istates(model), emissions(model), as.integer(y) - 1L)
+  )
+
