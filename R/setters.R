@@ -21,6 +21,8 @@
 }
 
 `emissions<-` <- function(x, value) {
+  if (is.matrix(value))
+    value <- Matrix::Matrix(value, sparse = TRUE)
   if (class(value) != "dgCMatrix")
     stop("The value is suposed to be of class dgCMatrix.")
   if (nrow(value) != nstates(x))
