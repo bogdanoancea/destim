@@ -7,6 +7,9 @@
 #' newly specified transition still have to sum up to one, the
 #' correspondent constraint is modified accordingly.
 #'
+#' It is not recommended to use this function to define a big model, as
+#' it is much slower than specifying all transitions in advance.
+#'
 #' @param x A HMM object.
 #' @param t The transition, as a two dimensional integer vector.
 #' The first element is the number of the initial state and the
@@ -35,17 +38,23 @@ addtransition <- function(x,t) {
                    "Remaining elements of the vector are ignored."))
     t <- t[1:2]
   }
-  if (any(apply(transitions(x), 2, function(z) all(z == t))))
+  t <- as.integer(t)
+  TL <- transitions(x)
+  CT <- constraints(x)
+  i <- findTorder(TL, t)
+  if (i == 0L)
     stop("Transition already stated as having non zero probability.")
-  TL <- x[["transitions"]]
-  CT <- x[["constraints"]]
-  CTrow <- which(sapply(1:nrow(CT), function(z) {
-                return(all(as.numeric(TL[1,] == t[1]) ==
-                             CT[z, -ncol(CT)]))
-    }))
-  TL <- cbind(matrix(t, ncol = 1), TL)
-  CT <- cbind(matrix(0,nrow = nrow(CT), ncol = 1), CT)
-  CT[CTrow, 1] <- 1
+  stilli <- which(TL[2, findTorder(TL,c(t[1], 0L)):(findTorder(TL,c(t[1] + 1L, 0L)) - 1)] == t[1])
+  stilli <- stilli + findTorder(TL,c(t[1], 0L)) - 2L
+
+  CT <- updateCTaddtran(CT, i - 1L, stilli, length(CT@x),
+                        findTorder(TL,c(t[1], 0L)):(findTorder(TL,c(t[1] + 1L, 0L)) - 1L) - 1L)
+  newTL <- matrix(0L,nrow = 2, ncol = ncol(TL) + 1)
+  newTL[,1:(i - 1)] <- TL[,1:(i - 1)]
+  newTL[,i] <- t
+  newTL[,(i + 1):(ncol(newTL))] <- TL[,i:(ncol(TL))]
+  TL <- newTL
+
   x[["transitions"]] <- TL
   x[["constraints"]] <- CT
   x[["parameters"]] <- list(transitions = NULL, states = NULL)
