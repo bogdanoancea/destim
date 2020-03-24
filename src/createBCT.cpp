@@ -239,3 +239,44 @@ int findTorder(const IntegerMatrix & TL, const IntegerVector &T) {
   }
   return(j + 2);
 }
+
+// [[Rcpp::export]]
+Eigen::SparseMatrix<double, Eigen::RowMajor> extractEQ(const SEXP & CT, IntegerVector stillt) {
+  int i, j1, j2, wi;
+  const MSM cmat(as<MSM> (CT));
+  typedef Triplet<double> T;
+  vector<T> tripletList;
+
+  tripletList.reserve(cmat.rows() * 2);
+  for (i = 0, wi = 0; (i < cmat.rows()) && (cmat.row(i).nonZeros() == 2); ++i) {
+    MSM::InnerIterator it(cmat,i);
+    bool is_still = false;
+    j1 = 0;
+    j2 = stillt.length() - 1;
+    while (j2 - j1 > 100) {
+      if ((stillt(j1) == it.col()) || (stillt(j2) == it.col())) {
+        is_still = true;
+        break;
+      }
+      else if (stillt((j1 + j2) / 2) > it.col())
+        j2 = (j1 + j2) / 2;
+      else
+        j1 = (j1 + j2) / 2;
+    }
+    if (is_still)
+      continue;
+    for (;j1 <= j2; ++j1)
+      if (stillt(j1) == it.col()) {
+        is_still = true;
+        break;
+      }
+    if (is_still)
+      continue;
+    tripletList.push_back(T(wi,it.col(), it.value()));
+    ++it;
+    tripletList.push_back(T(wi++,it.col(), it.value()));
+  }
+  SparseMatrix<double, RowMajor> omat(wi, cmat.cols());
+  omat.setFromTriplets(tripletList.begin(), tripletList.end());
+  return(omat);
+}
