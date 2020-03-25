@@ -7,13 +7,13 @@ using namespace Rcpp;
 using namespace Eigen;
 using namespace std;
 typedef Eigen::MappedSparseMatrix<double, Eigen::RowMajor> MSM;
+typedef MSM::InnerIterator MSMIt;
 
 
 
 // This is a very simple function to remove duplicates in a matrix
 // of float numbers. It only scales well when all but a few rows are
 // duplicates
-// [[Rcpp::plugins(cpp11)]]
 // [[Rcpp::export]]
 Eigen::SparseMatrix<double, Eigen::RowMajor> createBCT(const IntegerMatrix & TL, int S) {
   SparseMatrix<double, RowMajor> mat(S, TL.ncol() + 1);
@@ -253,7 +253,7 @@ Eigen::SparseMatrix<double, Eigen::RowMajor> extractEQ(const SEXP & CT, IntegerV
     bool is_still = false;
     j1 = 0;
     j2 = stillt.length() - 1;
-    while (j2 - j1 > 100) {
+    while (j2 - j1 > 10) {
       if ((stillt(j1) == it.col()) || (stillt(j2) == it.col())) {
         is_still = true;
         break;
@@ -279,4 +279,79 @@ Eigen::SparseMatrix<double, Eigen::RowMajor> extractEQ(const SEXP & CT, IntegerV
   SparseMatrix<double, RowMajor> omat(wi, cmat.cols());
   omat.setFromTriplets(tripletList.begin(), tripletList.end());
   return(omat);
+}
+
+// [[Rcpp::export]]
+Eigen::SparseMatrix<double, Eigen::RowMajor> createEQBCT(const SEXP & EQ, const SEXP & BCT,
+                                                         IntegerVector stillt) {
+  const MSM eqmat(as<MSM> (EQ));
+  const MSM bcmat(as<MSM> (BCT));
+  int i, j, k, l,eqvars[2];
+
+  SparseMatrix<double, RowMajor> trmatrix(eqmat.cols() - 1, eqmat.cols() - eqmat.rows() - 1);
+  trmatrix.reserve(VectorXi::Constant(trmatrix.rows(), 1));
+  l = 0;
+  for (j = 0; j < eqmat.rows(); ++j) {
+    k = 0;
+    for (MSMIt it(eqmat,j); it; ++it)
+      eqvars[k++]=it.index();
+    for (k = 0; k <= l; ++k)
+      if (k == l) {
+        trmatrix.insert(eqvars[0], k) = 1;
+        trmatrix.insert(eqvars[1], k) = 1;
+        ++l;
+        break; // Otherwise the loop would never end
+      }
+      else {
+        if (trmatrix.coeff(eqvars[0], k) != 0) {
+          trmatrix.insert(eqvars[1], k) = 1;
+          break;
+        }
+        else if (trmatrix.coeff(eqvars[1], k) != 0) {
+          trmatrix.insert(eqvars[0], k) = 1;
+          break;
+        }
+        else
+          continue;
+      }
+  }
+  // Fill up the remaining columns
+  for (i = 0, j = trmatrix.cols() - 1, k = 0; k < trmatrix.rows(); ++k)
+    if (trmatrix.row(k).nonZeros() == 0) {
+      if (stillt(i) == k) {
+        trmatrix.insert(k, j--) = 1;
+        ++i;
+      }
+      else
+        trmatrix.insert(k,l++) = 1;
+    }
+  trmatrix.makeCompressed();
+
+  SparseMatrix<double, RowMajor> tbcmat(bcmat.rows(), trmatrix.cols());
+  tbcmat = bcmat.leftCols(bcmat.cols() - 1) * trmatrix;
+
+  vector<int> idx(tbcmat.rows());
+  iota(idx.begin(), idx.end(), 0);
+  sort(idx.begin(), idx.end(), [&tbcmat] (int i, int j) {
+    SparseMatrix<double, RowMajor>::InnerIterator iti(tbcmat, i);
+    SparseMatrix<double, RowMajor>::InnerIterator itj(tbcmat, j);
+    for (; iti || itj; ++iti, ++itj) {
+      if (!iti)
+        return(false);
+      else if (!itj)
+        return(true);
+      else if (iti.col() < itj.col())
+        return(true);
+      else if (itj.col() < iti.col())
+        return(false);
+      else if(iti.value() > itj.value())
+        return(true);
+      else if (iti.value() < itj.value())
+        return(false);
+    }
+    return(true); // just in case
+  });
+
+  return(tbcmat);
+
 }
