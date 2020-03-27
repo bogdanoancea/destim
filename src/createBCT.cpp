@@ -281,12 +281,30 @@ Eigen::SparseMatrix<double, Eigen::RowMajor> extractEQ(const SEXP & CT, IntegerV
   return(omat);
 }
 
+
+// [[Rcpp::export]]
+Eigen::SparseMatrix<double, Eigen::RowMajor> extractRMCT(const SEXP & CT) {
+  const MSM cmat(as<MSM> (CT));
+  int i;
+
+  i = cmat.rows() - 1;
+  if (cmat.coeff(i, cmat.cols() - 1) == 1) {
+    SparseMatrix<double, RowMajor> omat(0, cmat.cols());
+    return(omat);
+  }
+  do --i;
+  while (cmat.coeff(i, cmat.cols() - 1) == 1);
+
+  return(cmat.bottomRows(cmat.cols() - i - 1));
+}
+
 // [[Rcpp::export]]
 Eigen::SparseMatrix<double, Eigen::RowMajor> createEQBCT(const SEXP & EQ, const SEXP & BCT,
                                                          IntegerVector stillt) {
   const MSM eqmat(as<MSM> (EQ));
   const MSM bcmat(as<MSM> (BCT));
-  int i, j, k, l,eqvars[2];
+  int i, j, k, l,eqvars[2], bottom;
+  IntegerVector eqtran(eqmat.cols() - stillt.length() - 1);
 
   SparseMatrix<double, RowMajor> trmatrix(eqmat.cols() - 1, eqmat.cols() - eqmat.rows() - 1);
   trmatrix.reserve(VectorXi::Constant(trmatrix.rows(), 1));
@@ -299,7 +317,7 @@ Eigen::SparseMatrix<double, Eigen::RowMajor> createEQBCT(const SEXP & EQ, const 
       if (k == l) {
         trmatrix.insert(eqvars[0], k) = 1;
         trmatrix.insert(eqvars[1], k) = 1;
-        ++l;
+        eqtran(l++) = eqvars[0];
         break; // Otherwise the loop would never end
       }
       else {
@@ -355,6 +373,14 @@ Eigen::SparseMatrix<double, Eigen::RowMajor> createEQBCT(const SEXP & EQ, const 
   SparseMatrix<double, RowMajor> omat(bcmat.rows(), bcmat.cols());
   omat.reserve(VectorXi::Constant(bcmat.rows(), l));
 
+  bottom = tbcmat.rows() - 1;
+  for (SparseMatrix<double, RowMajor>::InnerIterator it(tbcmat, idx.at(0));
+       it; ++it)
+    if (it.col() < l)
+      omat.insert(bottom, eqtran(it.col())) = it.value();
+    else
+      omat.insert(bottom, stillt(it.col() - l)) = it.value();
+    omat.insert(bottom--, omat.cols() - 1) = 1;
   for (i = 1, j = 0, k = 0; i < tbcmat.rows(); ++i) {
     bool equal;
     SparseMatrix<double, RowMajor>::InnerIterator iti(tbcmat, idx.at(i));
@@ -368,6 +394,15 @@ Eigen::SparseMatrix<double, Eigen::RowMajor> createEQBCT(const SEXP & EQ, const 
     if (equal) {
       omat.insert(k, stillt(itj.col() - l)) = 1;
       omat.insert(k++, stillt(iti.col() - l)) = -1;
+    }
+    else {
+      SparseMatrix<double, RowMajor>::InnerIterator it(tbcmat, idx.at(i));
+      for(;it;++it)
+        if (it.col() < l)
+          omat.insert(bottom, eqtran(it.col())) = it.value();
+        else
+          omat.insert(bottom, stillt(it.col() - l)) = it.value();
+      omat.insert(bottom--, omat.cols() - 1) = 1;
     }
   }
 
