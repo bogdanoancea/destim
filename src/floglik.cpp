@@ -15,16 +15,28 @@ double floglik(SEXP & TM, Eigen::Map<Eigen::VectorXd> values, const Eigen::Map<E
   MSM tmat(as<MSM> (TM));
   const MSM2 emat(as<MSM2> (EM));
   SparseVector<double> svector;
+  VectorXd init2;
+
   double isum, output = 0;
+  int i = 0;
 
   values = transmatrix.rightCols(1) + transmatrix.leftCols(rparams.size()) * rparams ;
 
-  svector = emat.col(obs(0)).cwiseProduct(init);
+  if (IntegerVector::is_na(obs(0))) {
+    for (init2 = init; (i < obs.length()) && (IntegerVector::is_na(obs(i))); ++i)
+      init2 = tmat.transpose() * init2;
+    if (i == obs.length())
+      return 0;
+    svector = emat.col(obs(i)).cwiseProduct(init2);
+  }
+  else
+    svector = emat.col(obs(0)).cwiseProduct(init);
+
   isum = svector.sum();
   output += log(isum);
   svector = svector / isum;
 
-  for (int i = 1; i < obs.length(); ++i) {
+  for (++i; i < obs.length(); ++i) {
     svector = tmat.transpose() * svector;
     if (!IntegerVector::is_na(obs(i))) {
       svector = svector.cwiseProduct(emat.col(obs(i)));
