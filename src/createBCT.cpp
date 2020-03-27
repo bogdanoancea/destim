@@ -352,6 +352,27 @@ Eigen::SparseMatrix<double, Eigen::RowMajor> createEQBCT(const SEXP & EQ, const 
     return(true); // just in case
   });
 
-  return(tbcmat);
+  SparseMatrix<double, RowMajor> omat(bcmat.rows(), bcmat.cols());
+  omat.reserve(VectorXi::Constant(bcmat.rows(), l));
+
+  for (i = 1, j = 0, k = 0; i < tbcmat.rows(); ++i) {
+    bool equal;
+    SparseMatrix<double, RowMajor>::InnerIterator iti(tbcmat, idx.at(i));
+    SparseMatrix<double, RowMajor>::InnerIterator itj(tbcmat, idx.at(j));
+    for(equal = true; (iti.col() < l) || (itj.col() < l); ++iti, ++itj)
+      if ((iti.col() != itj.col()) || (iti.value() != itj.value())) {
+        equal = false;
+        j = i;
+        break;
+      }
+    if (equal) {
+      omat.insert(k, stillt(itj.col() - l)) = 1;
+      omat.insert(k++, stillt(iti.col() - l)) = -1;
+    }
+  }
+
+  omat.makeCompressed();
+
+  return(omat);
 
 }
