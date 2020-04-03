@@ -6,7 +6,7 @@
 using namespace Rcpp;
 using namespace Eigen;
 using namespace std;
-typedef Eigen::MappedSparseMatrix<double, Eigen::RowMajor> MSM;
+typedef Eigen::Map< Eigen::SparseMatrix<double, Eigen::RowMajor>> MSM;
 typedef MSM::InnerIterator MSMIt;
 
 
@@ -241,15 +241,15 @@ int findTorder(const IntegerMatrix & TL, const IntegerVector &T) {
 }
 
 // [[Rcpp::export]]
-Eigen::SparseMatrix<double, Eigen::RowMajor> extractEQ(const SEXP & CT, IntegerVector stillt) {
-  int i, j1, j2, wi;
+Eigen::SparseMatrix<double, Eigen::RowMajor> extractEQ(const SEXP & CT, const IntegerVector & stillt) {
   const MSM cmat(as<MSM> (CT));
+  int i, j1, j2, wi;
   typedef Triplet<double> T;
   vector<T> tripletList;
 
   tripletList.reserve(cmat.rows() * 2);
   for (i = 0, wi = 0; (i < cmat.rows()) && (cmat.row(i).nonZeros() == 2); ++i) {
-    MSM::InnerIterator it(cmat,i);
+    MSMIt it(cmat,i);
     bool is_still = false;
     j1 = 0;
     j2 = stillt.length() - 1;
@@ -274,10 +274,12 @@ Eigen::SparseMatrix<double, Eigen::RowMajor> extractEQ(const SEXP & CT, IntegerV
       continue;
     tripletList.push_back(T(wi,it.col(), it.value()));
     ++it;
-    tripletList.push_back(T(wi++,it.col(), it.value()));
+    tripletList.push_back(T(wi,it.col(), it.value()));
+    ++wi;
   }
   SparseMatrix<double, RowMajor> omat(wi, cmat.cols());
   omat.setFromTriplets(tripletList.begin(), tripletList.end());
+  cout << omat.sum() << endl;
   return(omat);
 }
 
@@ -293,9 +295,9 @@ Eigen::SparseMatrix<double, Eigen::RowMajor> extractRMCT(const SEXP & CT) {
     return(omat);
   }
   do --i;
-  while (cmat.coeff(i, cmat.cols() - 1) == 1);
+  while (cmat.coeff(i, cmat.cols() - 1) != 1);
 
-  return(cmat.bottomRows(cmat.cols() - i - 1));
+  return(cmat.bottomRows(cmat.rows() - i - 1));
 }
 
 // [[Rcpp::export]]
@@ -305,7 +307,8 @@ Eigen::SparseMatrix<double, Eigen::RowMajor> createEQBCT(const SEXP & EQ, const 
   const MSM bcmat(as<MSM> (BCT));
   int i, j, k, l,eqvars[2], bottom;
   IntegerVector eqtran(eqmat.cols() - stillt.length() - 1);
-
+  cout << eqmat.cols() << endl;
+  cout << eqmat.rows() << endl;
   SparseMatrix<double, RowMajor> trmatrix(eqmat.cols() - 1, eqmat.cols() - eqmat.rows() - 1);
   trmatrix.reserve(VectorXi::Constant(trmatrix.rows(), 1));
   l = 0;
@@ -346,7 +349,10 @@ Eigen::SparseMatrix<double, Eigen::RowMajor> createEQBCT(const SEXP & EQ, const 
   trmatrix.makeCompressed();
 
   SparseMatrix<double, RowMajor> tbcmat(bcmat.rows(), trmatrix.cols());
+  cout << trmatrix.cols() << endl;
+
   tbcmat = bcmat.leftCols(bcmat.cols() - 1) * trmatrix;
+  cout << "bad alloc" << endl;
 
   vector<int> idx(tbcmat.rows());
   iota(idx.begin(), idx.end(), 0);
@@ -385,12 +391,14 @@ Eigen::SparseMatrix<double, Eigen::RowMajor> createEQBCT(const SEXP & EQ, const 
     bool equal;
     SparseMatrix<double, RowMajor>::InnerIterator iti(tbcmat, idx.at(i));
     SparseMatrix<double, RowMajor>::InnerIterator itj(tbcmat, idx.at(j));
-    for(equal = true; (iti.col() < l) || (itj.col() < l); ++iti, ++itj)
+    for(equal = true; iti && itj; ++iti, ++itj)
       if ((iti.col() != itj.col()) || (iti.value() != itj.value())) {
         equal = false;
         j = i;
         break;
       }
+    if (iti || itj)
+      equal = false;
     if (equal) {
       omat.insert(k, stillt(itj.col() - l)) = 1;
       omat.insert(k++, stillt(iti.col() - l)) = -1;
@@ -410,4 +418,98 @@ Eigen::SparseMatrix<double, Eigen::RowMajor> createEQBCT(const SEXP & EQ, const 
 
   return(omat);
 
+}
+
+// [[Rcpp::export]]
+Eigen::SparseMatrix<double, Eigen::RowMajor> frbind(const SEXP & MAT1, const SEXP & MAT2) {
+  const MSM mat1(as<MSM> (MAT1));
+  const MSM mat2(as<MSM> (MAT2));
+  SparseMatrix<double, RowMajor> omat(mat1.rows() + mat2.rows(), mat1.cols());
+  typedef Triplet<double> T;
+  vector<T> tripletList;
+
+  tripletList.reserve((mat1.rows() + mat2.rows()) * 2);
+  for (int i = 0;i < mat1.rows(); ++i)
+    for (MSMIt it(mat1, i); it; ++it)
+      tripletList.push_back(T(i, it.col(), it.value()));
+  for (int j = 0;j < mat2.rows(); ++j)
+    for (MSMIt it(mat2, j); it; ++it)
+      tripletList.push_back(T(j + mat1.rows(), it.col(), it.value()));
+
+  omat.setFromTriplets(tripletList.begin(), tripletList.end());
+  return(omat);
+}
+
+// [[Rcpp::export]]
+Eigen::SparseMatrix<double, Eigen::RowMajor> createEQ(const IntegerVector & tran, const int & ncol) {
+
+  SparseMatrix<double, RowMajor> omat(tran.length() - 1, ncol);
+  omat.reserve(VectorXi::Constant(omat.rows(), 2));
+  int ftran = tran(0);
+
+  for (int i = 0; i < omat.rows(); ++i) {
+    omat.insert(i, ftran) = 1;
+    omat.insert(i, tran(i + 1)) = -1;
+  }
+  omat.makeCompressed();
+
+  return(omat);
+}
+
+// [[Rcpp::export]]
+Eigen::SparseMatrix<double, Eigen::RowMajor> canonEQ(const SEXP & EQ) {
+  const MSM eqmat(as<MSM> (EQ));
+  SparseMatrix<int> equiv(eqmat.cols() - 1, eqmat.cols());
+  SparseMatrix<double, RowMajor> omat(eqmat.rows(), eqmat.cols());
+  int i, j, k, l, eqvars[2], eqcol[2];
+
+  equiv.setZero();
+  k = -1;
+  for (i = 0; i < eqmat.rows(); ++i) {
+    l = 0;
+    for (MSMIt it(eqmat,i); it; ++it, ++l)
+      eqvars[l]=it.index();
+    for(j = 0, eqcol[0] = -1, eqcol[1] = -1; j <= k; ++j) {
+      for (SparseMatrix<int>::InnerIterator it(equiv, j); it; ++it) {
+        if (it.row() == eqvars[0])
+          eqcol[0] = j;
+        else if (it.row() == eqvars[1])
+          eqcol[1] = j;
+        if ((eqcol[0] >= 0) && (eqcol[1] >= 0))
+          break;
+      }
+      if ((eqcol[0] >= 0) && (eqcol[1] >= 0))
+        break;
+    }
+
+    if ((eqcol[0] == -1) && (eqcol[1] == -1)) {
+      ++k;
+      equiv.insert(eqvars[0], k) = 1;
+      equiv.insert(eqvars[1], k) = 1;
+    }
+    else if (eqcol[0] == -1)
+      equiv.insert(eqvars[0], eqcol[1]) = 1;
+    else if (eqcol[1] == -1)
+      equiv.insert(eqvars[1], eqcol[0]) = 1;
+    else if (eqcol[0] != eqcol[1]) {
+      equiv.col(eqcol[0]) = equiv.col(eqcol[0]).cwiseMax(equiv.col(eqcol[1]));
+      equiv.col(eqcol[1]) = equiv.col(k);
+      equiv.col(k)=equiv.col(equiv.cols() - 1);
+      --k;
+    }
+  }
+
+  omat.reserve(VectorXi::Constant(omat.rows(), 2));
+  for (i = 0, l = 0; i <= k; ++i) {
+    SparseMatrix<int>::InnerIterator it(equiv, i);
+    j = it.row();
+    for(++it; it; ++it) {
+      omat.insert(l,j) = 1;
+      omat.insert(l++, it.row()) = -1;
+    }
+  }
+
+  omat.makeCompressed();
+
+  return(omat);
 }

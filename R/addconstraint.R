@@ -28,7 +28,7 @@
 #' model <- addtransition(model, c(3,1))
 #' transitions(model)
 #' constraints(model)
-#' model <- addconstraint(model,c(1,2,3))
+#' model <- addconstraint(model,c(2,4,5))
 #' constraints(model)
 #'
 addconstraint <- function(x, ct) {
@@ -44,13 +44,25 @@ addconstraint <- function(x, ct) {
     if (any(ct < 1) || any(ct > ntransitions(x)))
       stop(paste0("The indexes must be numbers between one and the number ",
                   "of transitions."))
-    newct <- matrix(0, ncol = ntransitions(x) + 1, nrow = length(ct) - 1)
-    for (i in 1:(length(ct) - 1)) {
-      newct[i, ct[i]] <- 1
-      newct[i, ct[i + 1]] <- -1
-    }
-    x[["constraints"]] <- rbind(x[["constraints"]],
-                                newct)
+    ct <- as.integer(ct)
+    print("Paso 1")
+    bct <- createBCT(transitions(x), nstates(x))
+    print("Paso 2")
+    newct <- createEQ(ct - 1L, ntransitions(x) + 1L)
+    stillt <- which(transitions(x)[1,] == transitions(x)[2,]) - 1L
+    print("Paso 3")
+    oldeq <- extractEQ(constraints(x), stillt)
+    print("Paso 4")
+    if (nrow(oldeq) != 0L)
+      newct <- frbind(oldeq, newct)
+    print("Paso 5")
+    newct <- canonEQ(newct)
+    print("Paso 6")
+    newct <- frbind(newct, createEQBCT(newct, bct, stillt))
+    rmct <- extractRMCT(constraints(x))
+    if (nrow(rmct) != 0L)
+      newct <- frbind(newct, rmct)
+    x[["constraints"]] <- newct
   }
   x[["parameters"]] <- list(transitions = NULL, states = NULL)
   return(x)
