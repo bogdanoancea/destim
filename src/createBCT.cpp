@@ -279,7 +279,7 @@ Eigen::SparseMatrix<double, Eigen::RowMajor> extractEQ(const SEXP & CT, const In
   }
   SparseMatrix<double, RowMajor> omat(wi, cmat.cols());
   omat.setFromTriplets(tripletList.begin(), tripletList.end());
-  cout << omat.sum() << endl;
+
   return(omat);
 }
 
@@ -307,9 +307,8 @@ Eigen::SparseMatrix<double, Eigen::RowMajor> createEQBCT(const SEXP & EQ, const 
   const MSM bcmat(as<MSM> (BCT));
   int i, j, k, l,eqvars[2], bottom;
   IntegerVector eqtran(eqmat.cols() - stillt.length() - 1);
-  cout << eqmat.cols() << endl;
-  cout << eqmat.rows() << endl;
   SparseMatrix<double, RowMajor> trmatrix(eqmat.cols() - 1, eqmat.cols() - eqmat.rows() - 1);
+
   trmatrix.reserve(VectorXi::Constant(trmatrix.rows(), 1));
   l = 0;
   for (j = 0; j < eqmat.rows(); ++j) {
@@ -349,10 +348,8 @@ Eigen::SparseMatrix<double, Eigen::RowMajor> createEQBCT(const SEXP & EQ, const 
   trmatrix.makeCompressed();
 
   SparseMatrix<double, RowMajor> tbcmat(bcmat.rows(), trmatrix.cols());
-  cout << trmatrix.cols() << endl;
 
   tbcmat = bcmat.leftCols(bcmat.cols() - 1) * trmatrix;
-  cout << "bad alloc" << endl;
 
   vector<int> idx(tbcmat.rows());
   iota(idx.begin(), idx.end(), 0);
@@ -391,25 +388,24 @@ Eigen::SparseMatrix<double, Eigen::RowMajor> createEQBCT(const SEXP & EQ, const 
     bool equal;
     SparseMatrix<double, RowMajor>::InnerIterator iti(tbcmat, idx.at(i));
     SparseMatrix<double, RowMajor>::InnerIterator itj(tbcmat, idx.at(j));
-    for(equal = true; iti && itj; ++iti, ++itj)
+    for(equal = true; (iti.col() < l) || (itj.col() < l); ++iti, ++itj)
       if ((iti.col() != itj.col()) || (iti.value() != itj.value())) {
         equal = false;
         j = i;
         break;
       }
-    if (iti || itj)
-      equal = false;
     if (equal) {
       omat.insert(k, stillt(itj.col() - l)) = 1;
       omat.insert(k++, stillt(iti.col() - l)) = -1;
     }
     else {
       SparseMatrix<double, RowMajor>::InnerIterator it(tbcmat, idx.at(i));
-      for(;it;++it)
+      for(;it;++it) {
         if (it.col() < l)
           omat.insert(bottom, eqtran(it.col())) = it.value();
         else
           omat.insert(bottom, stillt(it.col() - l)) = it.value();
+      }
       omat.insert(bottom--, omat.cols() - 1) = 1;
     }
   }
