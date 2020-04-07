@@ -45,17 +45,9 @@ addconstraint <- function(x, ct) {
       stop(paste0("The indexes must be numbers between one and the number ",
                   "of transitions."))
     ct <- as.integer(ct)
-    bct <- createBCT(transitions(x), nstates(x))
-    newct <- createEQ(ct - 1L, ntransitions(x) + 1L)
     stillt <- which(transitions(x)[1,] == transitions(x)[2,]) - 1L
-    oldeq <- extractEQ(constraints(x), stillt)
-    if (nrow(oldeq) != 0L)
-      newct <- frbind(oldeq, newct)
-    newct <- canonEQ(newct)
-    newct <- frbind(newct, createEQBCT(newct, bct, stillt))
-    rmct <- extractRMCT(constraints(x))
-    if (nrow(rmct) != 0L)
-      newct <- frbind(newct, rmct)
+    newct <- faddconstraint(ct - 1L, transitions(x), constraints(x), stillt, nstates(x))
+
     x[["constraints"]] <- newct
   }
   x[["parameters"]] <- list(transitions = NULL, states = NULL)
