@@ -16,13 +16,27 @@ List fforward(const SEXP & TM, const Eigen::Map<Eigen::VectorXd> init,
   SparseVector<double> svector(init.size());
   SparseMatrix<double> alpha(init.size(), obs.length());
   NumericVector sfactors(obs.length());
+  VectorXd init2;
+  int i = 0;
 
-  svector = emat.col(obs(0)).cwiseProduct(init);
-  sfactors(0) = svector.sum();
-  svector = svector / sfactors(0);
-  alpha.col(0) = svector;
+  if (IntegerVector::is_na(obs(0))) {
+    for (init2 = init; (i < obs.length()) && (IntegerVector::is_na(obs(i))); ++i) {
+      init2 = tmat.transpose() * init2;
+      sfactors(i) = 1;
+      alpha.col(i) = init2.sparseView();
+    }
+    if (i == obs.length())
+      return 0;
+    svector = emat.col(obs(i)).cwiseProduct(init2);
+  }
+  else
+    svector = emat.col(obs(i)).cwiseProduct(init);
 
-  for (int i = 1; i < obs.length(); ++i) {
+  sfactors(i) = svector.sum();
+  svector = svector / sfactors(i);
+  alpha.col(i) = svector;
+
+  for (++i; i < obs.length(); ++i) {
     svector = tmat.transpose() * svector;
     if (!IntegerVector::is_na(obs(i))) {
       svector = svector.cwiseProduct(emat.col(obs(i)));
