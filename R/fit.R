@@ -1,6 +1,34 @@
 #' Fits a HMM model
 #'
-#' Fits the model by maximum likelihood
+#' Fits the transition probabilities of the model by maximum likelihood.
+#'
+#' The transition probabilities are fitted by ML, subject to the linear constraints
+#' specified in the model. It is possible to specify additional non linear constraints,
+#' passing the suitable arguments to the optimizer.
+#'
+#' @param x A HMM model.
+#' @param e A vector with the observed events. It admits missing values.
+#' @param init Logical specifying whether the initial state found in x is going
+#' to be used. Defaults to FALSE, which means that steady state inizialization will be used
+#' instead.
+#' @param method The optimization algorithm to be used.
+#' Defaults to constrOptim from package stats. The other possible choices are donlp2 and
+#' solnp.
+#' @param ... Arguments to be passed to the optimizer.
+#'
+#' @return The fitted model.
+#'
+#' @seealso \link{logLik}, \link{initparams}, \link{minparams}
+#'
+#' @examples
+#' model <- HMMrectangle(20,20)
+#' S <- function(x) if (x > 5) return(0) else return(20*log(5/x))
+#' emissions(model) <- createEM(c(20,20), towers, S)
+#' model <- initparams(model)
+#' model <- minparams(model)
+#' logLik(model,events)
+#' model <- fit(model,events)
+#' logLik(model,events)
 #'
 fit <- function(x, e, init = FALSE, method = "constrOptim", ...) {
   if (is.null(x$parameters$reducedparams)) {
