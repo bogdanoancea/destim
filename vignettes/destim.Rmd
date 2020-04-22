@@ -124,7 +124,8 @@ The constraints are represented as the augmented matrix of a linear system of eq
 Both transitions and constraints can be specified as parameters when creating the model. It is also possible to add transitions and constraints later.
 ```{r}
 model <- addtransition(model,c(1,2))
-model <- addconstraint(model,c(1,2))
+model <- addtransition(model,c(2,3))
+model <- addconstraint(model,c(2,4))
 transitions(model)
 constraints(model)
 ```
@@ -206,7 +207,7 @@ image(matrix(sstates(model, obs)[,4], ncol = 10))
 The function scpstates returns the (smooth) joint probability mass function for consecutive states, analogous to the usually denoted $\xi_{i j}$ probabilities in the Baum-Welch algorithm (once convergence is achieved). This time, each column represents the space bi-variant distribution matrix as follows: the probability of the consecutive pair of states $(i,j)$ can be found in the row $400(i-1) + j$.
 ```{r}
 dim(scpstates(model, obs))
-image(matrix(scpstates(model, obs)[,4], ncol = 100), xlim = c(0,1))
+image(as.matrix(scpstates(model, obs)[,1:100 + 3*100]), xlim = c(0,1))
 ```
 
 Both each row and each column of the previous image are bidimensional spaces, so it is difficult to visualize: we would need four dimensions instead two! Even so, it is easy to see a diagonal pattern, which is coherent with the transition matrix. The transition matrix only allows transitions to contiguous points, so it is *almost* diagonal. In consequence, so are the $\xi_{i j}$ probabilities.
