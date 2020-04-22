@@ -2,10 +2,9 @@
 #'
 #' Calculates the forward probabilities.
 #'
-#' This function has two main purposes: on the one hand it is called by
-#' logLik to compute the likelihood, and on the other hand it is combined
-#' with backward algorithm to calculate smooth states and smooth
-#' consecutive pairwise states by functions sstates and scpstates.
+#' The main purpose of this function is to be combined with backward function
+#' to calculate smooth states and smooth consecutive pairwise states. This is done
+#' by functions sstates and scpstates.
 #'
 #' @param x A HMM model.
 #' @param y A vector with the observed events. It admits missing values.
@@ -40,6 +39,6 @@ forward <- function(...) {
 }
 #' @rdname forward
 forward.HMM <- function(x,y) return(
-  fforward(getTM(model), istates(model), emissions(model), as.integer(y) - 1L)
+  fforward(getTM(x), istates(x), emissions(x), as.integer(y) - 1L)
   )
 

@@ -16,7 +16,6 @@ scpstates <- function(...) {
 }
 #' @rdname scpstates
 scpstates.HMM <- function(x, e) {
-  output <- matrix(0, nrow = nstates(x) ** 2, ncol = length(e) - 1)
   TM <- getTM(x)
   EM <- emissions(x)
   fpass <- forward(x,e)

@@ -7,6 +7,7 @@ using namespace Rcpp;
 using namespace Eigen;
 using namespace std;
 typedef Eigen::MappedSparseMatrix<double, Eigen::RowMajor> MSM;
+typedef Eigen::MappedSparseMatrix<double> MSMC;
 typedef MSM::InnerIterator MSMIt;
 
 
@@ -530,3 +531,15 @@ Eigen::SparseMatrix<double, Eigen::RowMajor>
 
   return(omat);
 }
+
+// [[Rcpp::export]]
+Eigen::SparseMatrix<double, Eigen::RowMajor>
+  faddconstraintm(const SEXP & CT, const SEXP & CTS) {
+    const MSM cmat(as<MSM> (CT));
+    const MSMC cmat2(as<MSMC> (CTS));
+    SparseMatrix<double, RowMajor> cmat2R(cmat2.rows(), cmat2.cols());
+
+    cmat2R = cmat2;
+
+    return(frbind(cmat,cmat2R));
+  }
