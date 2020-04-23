@@ -45,7 +45,8 @@ Eigen::SparseMatrix<double, Eigen::RowMajor> updateCTaddtran(const SEXP & CT, in
   wi = 0;
   eqstillt = -1;
 
-  for (i = 0; (i < cmat.rows()) && (cmat.row(i).nonZeros() == 2); ++i) {
+  for (i = 0; (i < cmat.rows()) && (cmat.row(i).nonZeros() == 2) &&
+       (cmat.coeff(i, cmat.cols() - 1) != 1); ++i) {
     MSM::InnerIterator it(cmat,i);
     j1 = it.col();
     ++it;
@@ -72,13 +73,17 @@ Eigen::SparseMatrix<double, Eigen::RowMajor> updateCTaddtran(const SEXP & CT, in
   tripletList.push_back(T(wi++, newcmat.cols() - 1,1));
 
   while (i < cmat.rows() && cmat.coeff(i, cmat.cols() - 1) == 1) {
+    if ((eqstillt == -1) && (cmat.coeff(i, stillt) != 0)) {
+      ++i;
+      continue;
+    }
     for (MSM::InnerIterator it(cmat, i);it;++it)
       if (it.col() == stillt)
         tripletList.push_back(T(wi, (eqstillt < newt)?eqstillt:eqstillt + 1, it.value()));
       else
         tripletList.push_back(T(wi, (it.col() < newt)?it.col():it.col() + 1, it.value()));
-      ++wi;
-      ++i;
+    ++wi;
+    ++i;
   }
 
   while (i < cmat.rows()) {
@@ -380,12 +385,13 @@ Eigen::SparseMatrix<double, Eigen::RowMajor>
     if (it.col() < l)
       omat.insert(bottom, eqtran(it.col())) = it.value();
     else
-      omat.insert(bottom, stillt(it.col() - l)) = it.value();
+      omat.insert(bottom, stillt(tbcmat.cols() - it.col() - 1)) = it.value();
     omat.insert(bottom--, omat.cols() - 1) = 1;
   for (i = 1, j = 0, k = 0; i < tbcmat.rows(); ++i) {
     bool equal;
     SparseMatrix<double, RowMajor>::InnerIterator iti(tbcmat, idx.at(i));
     SparseMatrix<double, RowMajor>::InnerIterator itj(tbcmat, idx.at(j));
+
     for(equal = true; (iti.col() < l) || (itj.col() < l); ++iti, ++itj)
       if ((iti.col() != itj.col()) || (iti.value() != itj.value())) {
         equal = false;
@@ -393,8 +399,8 @@ Eigen::SparseMatrix<double, Eigen::RowMajor>
         break;
       }
     if (equal) {
-      omat.insert(k, stillt(itj.col() - l)) = 1;
-      omat.insert(k++, stillt(iti.col() - l)) = -1;
+      omat.insert(k, stillt(tbcmat.cols() - itj.col() - 1)) = 1;
+      omat.insert(k++, stillt(tbcmat.cols() - iti.col() - 1)) = -1;
     }
     else {
       SparseMatrix<double, RowMajor>::InnerIterator it(tbcmat, idx.at(i));
@@ -402,7 +408,7 @@ Eigen::SparseMatrix<double, Eigen::RowMajor>
         if (it.col() < l)
           omat.insert(bottom, eqtran(it.col())) = it.value();
         else
-          omat.insert(bottom, stillt(it.col() - l)) = it.value();
+          omat.insert(bottom, stillt(tbcmat.cols() - it.col() - 1)) = it.value();
       }
       omat.insert(bottom--, omat.cols() - 1) = 1;
     }
