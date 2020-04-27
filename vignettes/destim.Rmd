@@ -24,16 +24,16 @@ This vignette contains an introduction to *destim*: its main purpose, syntax and
 This section contains a brief explanation about the intended use of the package and some remarks on the methodology.
 
 ### Introduction
-This package purpose is to estimate the spatial distribution of the number of devices, which corresponds to an intermediate step in the general methodology framework described in @WP5Deliverable1.3.
+This package purpose is to estimate the spatial distribution of the devices, which corresponds to an intermediate step in the general methodology framework described in @WP5Deliverable1.3.
 
 The network events are the result of the constant interaction between a mobile device and a telecommunication network. While the information comprised in these events can be quite complex (and rich), since we are mostly interested in geolocation, a space likelihood that summarizes the event is all we need. The transformation from the network events to the likelihood is quite technical and clearly corresponds to the mobile network operators (MNO), see @WP5Deliverable1.3 for more details.
 
 By space likelihood, we mean the likelihood of the event conditioned on the position of the device. It is quite obvious to identify this likelihood with the emission probabilities of a Hidden Markov model.
 
 ### The model
-So, we propose a Hidden Markov model to describe the movement of the devices. Those models are quite general and flexible, can be made simple or as complex as wished. Unlike usual, we are not going to estimate the emissions probabilities, that as said we consider known.
+So, we propose a Hidden Markov model to describe the movement of the devices. Those models are quite general and flexible, can be made simple or as complex as wished. Unlike usual, we are not going to estimate the emission probabilities, that as said we consider known.
 
-As we are mainly interested in estimate their location, and observation events are expected to give mostly information about it,location is a natural choice as state of the model. Since we are considering a tessellation of the map, each possible state would be a tile.
+As we are mainly interested in estimate location, and observation events are expected to give mostly information about it, location itself is a natural choice as state of the model. Since we are considering a tessellation of the map, each possible state would be a tile.
 
 While this could be the simpler approach, it is important to note that more complexity in the state-space might be useful. For example, we might want to represent a car moving north in a highway and a car moving south in the same tile (the tile contains both lanes) by different states, as they are expected to go next to different tiles.
 
@@ -41,9 +41,9 @@ So, if we denote by $n$ the number of tiles, we are going to have not less than 
 
 Note that in practice, we can do this without losing generality, because given an upper bound for speed $V$ and a lower bound $E$ for the distance between non-contiguous tiles, we can set $\Delta t = \frac{E}{V}$ and the *jump* will no longer be possible.
 
-Now, we have $O(n)$ non zero transitions, which is more affordable, but still very expensive. If we want to reduce this complexity, one option is to classify the states in a certain number of classes, and constrain the transition probabilities to be equal for tiles of the same kind. This only makes sense for periodic tesselations, so it is a strong argument to use periodic tesselations better than other possible choices (Voronoi, BSA, etc.). This is not a limitation of the package though, so it is still possible to estimate models based in non-periodic tilings, but $O(n)$ parameters would have to be estimated. In practice, the package allows any linear constraint between the transition probabilities.
+Now, we have $O(n)$ non zero transitions, which is more affordable, but still very expensive. If we want to reduce this complexity, one option is to classify the states in a certain number of classes, and constrain the transition probabilities to be equal for tiles of the same kind. This only makes sense for periodic tesselations, so it is a strong argument to use periodic tesselations better than other possible choices (Voronoi, BSA, etc.). This is not a limitation of the package though, so it is still possible to estimate models based in non-periodic tilings, but $O(n)$ parameters would have to be estimated or more complex constraints would have to be specified. In practice, the package allows any linear constraint between the transition probabilities. There is also some support for non linear constraints.
 
-So, we can use constraints to reduce the number of parameters as much as wanted. It is a good idea to keep small the number of (free) parameters: on one hand the likelihood optimization becomes less computationally expensive and on the other hand we get a more parsimonious model.
+Thus, we can use constraints to reduce the number of parameters as much as wanted. It is a good idea to keep small the number of (free) parameters: on one hand the likelihood optimization becomes less computationally expensive and on the other hand we get a more parsimonious model.
 
 ### Fitting the model
 Once we have defined an appropiate model for our problem, the next step is to estimate the (hopefully few) free parameters. As has been already stated, emissions are known, so there are no emission parameters to fit. The initial state is either fixed or set to steady state, so the only parameters to fit in practice are the probabilities of transition.
@@ -83,7 +83,7 @@ Usually, algorithms for constrained optimization will require an initial value i
 3. Now some of the probabilities might be greater than one or smaller than zero. Those are set once again to independent uniforms.
 4. Repeat steps 2 and 3 till all transition probabilities are between zero and one.
 
-As already stated, the initial state is set to steady if not fixed. The steady state is calculated as the (first) eigenvector that its eigenvalue is close enough to one. This should be enough because these Markov chains are expected to be both irreducible and aperiodic, otherwise we would have strange movement restrictions.
+As already stated, the initial state is set to steady if not fixed. The steady state is calculated as the (normalized to sum up one) solution to $(T - I)x = 0$, where $T$ is the transition matrix, $I$ the identity and the last component of $x$ is set to one divided by its dimension. This should be enough because these Markov chains are expected to be both irreducible and aperiodic, otherwise we would have strange movement restrictions.
 
 ### The outputs
 Once the model has been fit, we can estimate the smooth states by means of the forward-backward algorithm. The smooth states are the mass probability function of the states given the observed data (and the model), thus they kind of summarize all the information available for a given time $t$. So one of the outputs of the package are the smooth states, that can be aggregated to get a space distribution of the number of devices as explained in @WP5Deliverable1.3, section 4.2.
@@ -104,14 +104,14 @@ library(destim, warn.conflicts = FALSE)
 ```{r}
 model <- HMM(5)
 ```
-When the first parameter is a number, it contains the number of states, so we have five states. Since we have not specified a list of transitions, all states transition to themselves and so only five transitions too.
+When the first parameter is a number, it contains the number of states, so we have five states. Since we have not specified a list of transitions, all states transition to themselves and so there are only five transitions too.
 
 ```{r}
 nstates(model)
 ntransitions(model)
 transitions(model)
 ```
-The transitions with non zero probability are represented by an integer matrix with two rows, where each column is a transition. The first column is the initial state and the second the final state. Of course, the states are represented by an integer number.
+The transitions with non zero probability are represented by an integer matrix with two rows, where each column is a transition. The first column is the initial state and the second the final state. Of course, the states are represented by an integer number. The columns of the matrix are ordered first by initial state and then by final state.
 
 Now, let us look at the constraints.
 ```{r}
@@ -124,15 +124,20 @@ The constraints are represented as the augmented matrix of a linear system of eq
 Both transitions and constraints can be specified as parameters when creating the model. It is also possible to add transitions and constraints later.
 ```{r}
 model <- addtransition(model,c(1,2))
-model <- addconstraint(model,c(1,2))
+model <- addtransition(model,c(2,3))
+model <- addconstraint(model,c(2,4))
 transitions(model)
 constraints(model)
 ```
-Now it becomes possible to transition from state 1 to state 2, and in consequence, the first constraint is changed, so we have $p_{11} + p_{12} = 1$ instead $p_{11} = 1$. Moreover, we have added an equality constraint: the first transition probability is equal to the second one. In the matrix of transitions we can see that those first transitions are the transition from one to two and from one to one respectively. The new can be seen in the last row of the new constraints matrix. The constraints to add can also be expressed as the rows of the constraints matrix we want to append.
+Now it becomes possible to transition from state 1 to state 2, and from state 2 to state 3. Moreover, we have added an equality constraint: the second transition probability is equal to the fourth one. In the matrix of transitions we can see that those transitions are the transition from one to two and from two to three respectively, that we have just added.
+
+The constraints matrix is a row major sparse matrix. When the second parameter of addconstraint is a vector, it is expected to reference two transitions whose probabilities are equal. The still transitions (from one state to itself), should not be referenced as they are treated automatically so all transition probabilities starting from any fixed state sum up to one. The purpose of these *equality constraints* is to improve performance as they might be a lot and can be treated easily.
+
+When the second parameter of addconstraint is a matrix, it is just row bound to the matrix of constraints. This is intended to add more general linear constraints, and it is not recommended to add equality constraints this way, as performance might decrease notably. However, (non automatic) equalities that involve still transitions have to be introduced this way.
 
 The emission probabilities are also stored in a matrix, where the element $e_{i j}$ is the probability of the event $j$ to happen, knowing that the device is placed in tile $i$. Of course, the number of possible events is expected to be much smaller than the number of actually observed events. It is possible, though, that the number of columns of the emissions matrix matches the number of actually observed events. This way we do not save memory with the matrix, but it allows us to do the estimations even for a continuous space of observable events.
 
-Note that, in the particular, if any possible event corresponds to a column of the matrix of emissions, each row sums to one. This does not happen in general, as the columns do not need to be exhaustive, and in the continous case they do not even can.
+Note that, in particular, if any possible event corresponds to a column of the matrix of emissions, each row sums to one. This does not happen in general, as the columns do not need to be exhaustive, and in the continous case they do not even can.
 
 As we have not specified the emission probabilities, they are set to NULL by default.
 ```{r}
@@ -206,31 +211,29 @@ image(matrix(sstates(model, obs)[,4], ncol = 10))
 The function scpstates returns the (smooth) joint probability mass function for consecutive states, analogous to the usually denoted $\xi_{i j}$ probabilities in the Baum-Welch algorithm (once convergence is achieved). This time, each column represents the space bi-variant distribution matrix as follows: the probability of the consecutive pair of states $(i,j)$ can be found in the row $400(i-1) + j$.
 ```{r}
 dim(scpstates(model, obs))
-image(matrix(scpstates(model, obs)[,4], ncol = 100), xlim = c(0,1))
+image(as.matrix(scpstates(model, obs)[,1:100 + 3*100]), xlim = c(0,1))
 ```
 
 Both each row and each column of the previous image are bidimensional spaces, so it is difficult to visualize: we would need four dimensions instead two! Even so, it is easy to see a diagonal pattern, which is coherent with the transition matrix. The transition matrix only allows transitions to contiguous points, so it is *almost* diagonal. In consequence, so are the $\xi_{i j}$ probabilities.
 
 ## Some remarks about computational efficiency
-The package is not optimized yet, but some possible bottlenecks have been already noticed. In this section we are going to dicuss them.
+The package has some degree of optimization, as it uses Rcpp and RcppEigen (for sparse linear algebra) in some critical functions. It can handle fairly well models with around $10^7$ states in a desktop computer (if enough RAM is provided). Some faster sparse linear algebra library (for example intel MKL) might improve a little bit the performance of such operations. Also, we are going to comment the possibility of improve the performance using parallel computing
 
 ### Model construction
-As has been already stated, the package is not really ready for model construction, except for the function HMMrectangle, which serves only for toy models. While it is a slow function, its speed can be improved greatly using some compiled language. It is also an embarrassingly parallel problem, so it scales well. On the downside, its complexity increases with the number of states, which can be huge, as it is potentially the area of the country. While a device normally moves around a much smaller area, in practice we need to estimate the position for all the devices, so it is expected to be a very computationally demanding step.
+As has been already stated, the package is not really ready for model construction, except for the function HMMrectangle, which are very basic models. While it is a rather fast function, its performance can be easily improved as it is an embarrassingly parallel algorithm. This also allows to use a cluster to generate the model.
 
 ### Model initialization and parametrization
-The algorithm used to find an inital value for the optimizer, solves a linear system of equations at each step. While the order of the system grows with the number of transitions and constraints, in practice, most constraints state the equality between two transition probabilities. It is not difficult to get rid of one of the transitions and the constraint in those cases, so in practice the process scales very well for parsimonious models. The function in the package might seem a bit slow, but the elimination of constraints should be written in some compiled language and optimized.
+The algorithm used to find an inital value for the optimizer, solves a linear system of equations at each step. While the order of the system grows with the number of transitions and constraints, in practice, most constraints state the equality between two transition probabilities. It is not difficult to get rid of one of the transitions and the constraint in those cases, so in practice the process scales very well for parsimonious models. 
 
 Mostly all said for initialization also goes for parametrization, where the QR decomposition is the *slow* step.
 
 ### Forward-Backward algorithm
-While it is not implemented yet, the transition matrix can now be easily made sparse, which will improve greatly the computational efficiency of the algorithm. The algorithm is expected to scale well both in memory and speed, and can also be made parallel. As the forward part is used also for likelihood evaluation (the complete algorithm is used for smoothing), a highly efficient forward-backward algorithm is quite important. 
+This is mostly multiply sparse matrices, which relies on another library (currently Eigen). Eigen is not the faster library at this even on a desktop computer but the performance is not so bad. In the future intel MKL might be a good choice, and it can also work in distributed mode.
 
 ### Likelihood optimization
 The purpose of all the previous steps is to make easier the task of the optimizer, so it should not be a problem if everything else is fine. Transition probabilities are required to be between zero and one, what in general means O(n) inequality constraints. A well specified parsimonious model, will often have a lot less constraints, as most of them are duplicated. As a reference, a HMMrectangle(20,20) has 3364 transitions and only 5 constraints are needed in practice.
 
-Duplicated rows are eliminated from the matrix of inequality constraints before calling the optimizer, just in case some of the equalities between probabilities are consequence of the constraints of the model, but are not a specific constraint.
-
-Duplicate rows removal for a matrix of floats is done through a small C++ function, using RCpp package. The function is not very efficient, except when there are few different rows, and it will be replaced by a function that sorts the matrix and then removes duplicates in future versions of the package. 
+Equalities between transition probabilities would generate duplicated rows in the matrix of inequality constraints which are eliminated before calling the optimizer.
 
 # References
 

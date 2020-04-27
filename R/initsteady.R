@@ -38,15 +38,6 @@
 initsteady <- function(x) {
   if (class(x) != "HMM")
     stop("This function only works with HMM objects.")
-
-  # Initial steady state calculation
-  edecomp <- eigen(t(getTM(x)))
-  # The steady state might be not unique!
-  i <- which(abs(edecomp$values - 1) < sqrt(.Machine$double.eps))[1]
-  states <- Re(edecomp$vectors[,i])
-  states <- states / sum(states)
-
-  x$parameters$states <- states
-
+  istates(x) <- createsteady(getTM(x))
   return(x)
 }

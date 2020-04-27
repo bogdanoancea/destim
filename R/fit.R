@@ -1,34 +1,59 @@
 #' Fits a HMM model
 #'
-#' Fits the model by maximum likelihood
+#' Fits the transition probabilities of the model by maximum likelihood.
 #'
-fit <- function(x, e, sq = FALSE, init = FALSE, method = "constrOptim", ...) {
+#' The transition probabilities are fitted by ML, subject to the linear constraints
+#' specified in the model. It is possible to specify additional non linear constraints,
+#' passing the suitable arguments to the optimizer.
+#'
+#' @param x A HMM model.
+#' @param e A vector with the observed events. It admits missing values.
+#' @param init Logical specifying whether the initial state found in x is going
+#' to be used. Defaults to FALSE, which means that steady state inizialization will be used
+#' instead.
+#' @param method The optimization algorithm to be used.
+#' Defaults to constrOptim from package stats. The other possible choices are donlp2 and
+#' solnp.
+#' @param ... Arguments to be passed to the optimizer.
+#'
+#' @return The fitted model.
+#'
+#' @seealso \link{logLik}, \link{initparams}, \link{minparams}
+#'
+#' @examples
+#' model <- HMMrectangle(20,20)
+#' S <- function(x) if (x > 5) return(0) else return(20*log(5/x))
+#' emissions(model) <- createEM(c(20,20), towers, S)
+#' model <- initparams(model)
+#' model <- minparams(model)
+#' logLik(model,events)
+#' model <- fit(model,events)
+#' logLik(model,events)
+#'
+fit <- function(x, e, init = FALSE, method = "constrOptim", ...) {
   if (is.null(x$parameters$reducedparams)) {
     if (is.null(x$parameters$transitions))
       x <- initparams(x)
     x <- minparams(x)
   }
-  trmatrix <-
-    gettransmatrix(x)[x$parameters$reducedparams$cconstraints, ]
-  trmatrix <-
-    trmatrix[apply(trmatrix,1,function(trow)
-      sum(trow[-length(trow)]^2) != 0), ]
-  trmatrix <- funique(trmatrix)
+  trmatrix <- createlconmatrix(x$constraints)
   ui <- trmatrix[, -ncol(trmatrix), drop = FALSE]
   ci <- -trmatrix[, ncol(trmatrix)]
   ui <- rbind(ui, -trmatrix[, -ncol(trmatrix), drop = FALSE])
   ci <- c(ci, trmatrix[, ncol(trmatrix)] - rep(1,length(ci)))
-  if (!init)
-    ofun <- function(p) {
-              rparams(x) <- p
-              x <- initsteady(x)
-              return(logLik(x,e, sq))
-            }
+  TM <- createTM(x$transitions, x$parameters$transitions, nstates(x))
+  if (!init) {
+    createsteady(TM)
+    ofun <- function(p) return(
+      floglik(TM, TM@x, p, x$parameters$reducedparams$transmatrix,
+              createsteady(TM, TRUE), emissions(x), as.integer(e) - 1L)
+    )
+  }
   else
-    ofun <- function(p) {
-      rparams(x) <- p
-      return(logLik(x,e, sq))
-    }
+    ofun <- function(p) return(
+      floglik(TM, TM@x, p, x$parameters$reducedparams$transmatrix,
+              istates(x), emissions(x), as.integer(e) - 1L)
+    )
   if (method == "constrOptim") {
     if (!require("stats"))
       stop("Package states required for constrOptim method")

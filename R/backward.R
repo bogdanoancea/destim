@@ -2,27 +2,31 @@
 #'
 #' Calculates the backward probabilities.
 #'
+#' The main purpose of this function is to be combined with forward function
+#' to calculate smooth states and smooth consecutive pairwise states. This is done
+#' by functions sstates and scpstates.
 #'
-#' @return A HMM object.
+#' @param x A HMM model.
+#' @param y A vector with the observed events. It admits missing values.
+#' @param sfactors A vector with the scale factors from the forward algorithm.
+#'
+#' @return A matrix that contains the (rescaled) backward probabilities.
+#'
+#' @seealso \link{forward}, \link{sstates}, \link{scpstates}
 #'
 #' @examples
-#' HMM(1L, matrix(c(1L,1L), nrow = 2), EM = matrix(1, nrow = 1))
+#' model <- HMMrectangle(3,3)
+#' emissions(model) <- Matrix(c(1, 1, 0.5, 1, 0.5, 0, 0.5, 0, 0,
+#'                              0, 0, 0.5, 0, 0.5, 1, 0.5, 1, 1),
+#'                              ncol = 2, sparse = TRUE)
+#' model <- initparams(model)
+#' fpass <- forward(model, c(1,2,1))
+#' backward(model, c(1,2,1), fpass$scalefactors)
 
 backward <- function(...) {
   UseMethod("backward")
 }
 #' @rdname backward
-backward.HMM <- function(x,y,sfactors) {
-  TM <- getTM(x)
-  EM <- emissions(x)
-  beta <- matrix(0,nrow = nstates(x), ncol = length(y))
-  svector <- rep(1,nstates(x))
-  for (i in length(y):1) {
-    beta[,i] <- svector
-    if (!is.na(y[i]))
-      svector <- svector * EM[,y[i]]
-    svector <- TM %*% svector
-    svector <- svector / sfactors[i]
-  }
-  return(beta)
-}
+backward.HMM <- function(x,y,sfactors) return (
+  fbackward(getTM(x), emissions(x), as.integer(y) - 1L, sfactors)
+  )

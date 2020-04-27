@@ -71,7 +71,7 @@ HMM <- function(...) {
   UseMethod("HMM")
 }
 #' @rdname HMM
-HMM.integer <- function(S, TL, CT, EM = NULL) {
+HMM.integer <- function(S, TL, CT, EM = NULL, checks = TRUE) {
 
   if (missing(TL))
     TL = matrix(c(1:S,1:S), nrow = 2, byrow = TRUE)
@@ -79,20 +79,25 @@ HMM.integer <- function(S, TL, CT, EM = NULL) {
     stop("The list of transitions must contain exactly two rows.")
   if ((min(TL) < 1) || max(TL) > S)
     stop("The states are referenced by numbers from 1 to S")
-  # Remove possible duplicates
-  TL <- t(unique(t(TL)))
 
-  BCT <- t(sapply(1:S, function(x) c(TL[1,] == x, 1.0)))
+  if (checks)
+    if (anyDuplicated(t(TL)))
+      stop("Duplicates are not allowed in the list of transitions.")
+
   if (missing(CT))
-    CT <- BCT
-  else {
-    if (ncol(CT) != ncol(TL) + 1)
-      stop(paste0("The number of columns of the constraints matrix ",
-                   "does not match the number of transitions."))
-    CT <- rbind(CT, BCT)
-  }
+    CT <- createBCT(TL, as.integer(S))
+
+  # Sort TL and CT if not already sorted
+  if (checks)
+    if (!is_sortedTL(TL)) {
+      idx <- orderTL(TL)
+      TL <- TL[, idx]
+      CT[, -ncol(CT)] <- CT[,idx]
+    }
+
+  # If checks ...
   # Remove possible duplicates
-  # TODO
+  # ... TODO
 
   output <- list(states = list(names = as.character(1:S),
                                coordinates = NULL),
