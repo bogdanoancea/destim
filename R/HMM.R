@@ -1,6 +1,6 @@
 #' Class constructor for Hidden Markov models
 #'
-#' Creates an HMM object, as specified.
+#' Creates a HMM object, as specified.
 #'
 #' The HMM object contains five fields: states, transitions,
 #' constraints, emisions and parameters.
@@ -15,7 +15,9 @@
 #' The field transitions contain a matrix which is a list of the
 #' transitions with non-zero probability. It is a two row integer matrix
 #' where each column represents the transition from first row state
-#' to second row state. The states are referenced in the same order as
+#' to second row state. The columns of the matrix are ordered by first row and
+#' then by second row. This order corresponds to a row major representation of
+#' the transition matrix. The states are referenced in the same order as
 #' they appear in field states. While (number of states)^2 transitions
 #' are possible, a much smaller number is expected. It defaults to still
 #' transitions for all states.
@@ -23,20 +25,25 @@
 #' The field constraints is the augmented matrix of the system of
 #' linear equalities that the model must fulfill. The variables of the
 #' system correspond to the probabilities of transition, in the same
-#' order as in field transitions. The constraints that restrict the
-#' transition matrix to be stochastic are treated automatically.
+#' order as in field transitions. It is a row major sparse matrix. The first
+#' rows should have equalities between pairs of transition probabilities,
+#' which are rows with just two non zero elements. Next, we have the sum up to one
+#' conditions, which are rows with constant term equal to one. Finally, the remaining
+#' constraints are expected to have constant term different from one (otherwise
+#' multiply the constraint by a constant). This structure, allows an efficient
+#' treatment of constraints that are equalities between pairs of transition probabilities.
+#' They are expected to be the most frequent constraints.
 #'
 #' The field emissions consists in a matrix that contains the emission
 #' probabilities, where the number of rows is the number of states and
-#' each column correspond to a possible output. Unlike usual, the
-#' emission probabilities are fixed.
+#' each column correspond to a possible output. EM is a column major sparse
+#' matrix. Unlike usual, the emission probabilities are fixed, do not have
+#' parameters to estimate.
 #'
 #' The field parameters contain additional information about the
 #' probabilities of transition and the initial state of the model.
 #' Also some auxiliar information to reduce the number of parameters
 #' of the model. See initparams, minparams and initsteady.
-#'
-#'
 #'
 #' @param S  Number or names of states. It can be either a numeric or a
 #' character.
@@ -48,7 +55,7 @@
 #' @param EM Matrix of emissions. It corresponds to the field
 #' emissions of the object (see details).
 #'
-#' @return A HMM model object.
+#' @return A HMM object.
 #'
 #' @seealso \link{initparams}, \link{minparams}, \link{initsteady}
 #'
