@@ -7,7 +7,6 @@ Maintainer: Bogdan Oancea <bogdan.oancea@gmail.com>
 Description: R package for mobile devices position estimation
 License: GPL3, EUPL
 Imports: Rcpp,
-         RcppEigen,
          Matrix,
          raster, 
          RColorBrewer,

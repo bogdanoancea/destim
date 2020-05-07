@@ -1,4 +1,4 @@
-exportPattern("^[[:alpha:]]+")
 useDynLib(destim)
-importFrom(Rcpp, sourceCpp)
 import(RcppEigen)
+importFrom(Rcpp, evalCpp)
+exportPattern("^[[:alpha:]]+")
