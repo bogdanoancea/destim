@@ -1,1 +1,1 @@
-Rscript -e 'library(Rcpp); compileAttributes(".")'
+Rscript -e 'Rcpp::compileAttributes(); library(roxygen2); roxygenize(load_code = load_source)'
