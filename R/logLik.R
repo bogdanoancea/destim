@@ -1,13 +1,26 @@
-#' This function returns the (minus) logLikelihood
+#' Minus logLikelihood
 #'
-#' This function returns the minus logarithm of the likelihood to
-#' minimize.
-# P : Transition matrix P(will go to i | is in j)
-# E : Event observation matrix P(detection event j | is in i)
-# e: Sequence of observation events. Since we are taking
-# time increase small, it is expected to have mostly missing
-# values. The first value is expected to have an observation.
-
+#' Returns the minus logarithm of the likelihood given a model and a set of observations.
+#'
+#' A slightly modified version of the forward algorithm is used to compute the likelihood,
+#' to avoid store unneeded data. The sign is changed because it is usual to minimize
+#' instead maximize.
+#'
+#' @param x A HMM model.
+#' @param e A vector with the observed events. It admits missing values.
+#'
+#' @return The minus logarithm of the likelihood of the events given the model.
+#'
+#' @seealso \link{fit}, \link{HMM}, \link{initparams}
+#'
+#' @examples
+#' model <- HMMrectangle(20,20)
+#' S <- function(x) if (x > 5) return(0) else return(20*log(5/x))
+#' emissions(model) <- createEM(c(20,20), towers, S)
+#' model <- initparams(model)
+#' model <- minparams(model)
+#' logLik(model,events)
+#'
 logLik <- function(...) {
   UseMethod("logLik")
 }

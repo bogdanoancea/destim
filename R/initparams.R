@@ -1,6 +1,6 @@
-#' A simple Initializer for HMM objects
+#' Initializer for HMM objects
 #'
-#' Set initial parameters for an HMM object, as specified.
+#' Sets initial parameters for a HMM object, as specified.
 #'
 #' The field parameters of the HMM object, which includes both
 #' initial state and transition probabilities, is initialized at
@@ -20,10 +20,12 @@
 #'
 #' @return An initialized HMM object.
 #'
+#' @seealso \link{HMM}, \link{minparams}, \link{initsteady}
+#'
 #' @examples
-#' model <- HMMrectangle(2,2)
+#' model <- HMMrectangle(3,3)
 #' model <- initparams(model)
-#' range(constraints(model) %*% c(ptransition(model), -1))
+#' range(constraints(model) %*% c(ptransition(model), -1)) # It should be close to zero
 #'
 initparams <- function(x) {
   if (class(x) != "HMM")
