@@ -21,10 +21,12 @@
 #' model <- minparams(model)
 #' logLik(model,events)
 #'
+#' @export
 logLik <- function(...) {
   UseMethod("logLik")
 }
 #' @rdname logLik
+#' @export
 logLik.HMM <- function(x,e) {
   TM <- createTM(x$transitions, x$parameters$transitions, nstates(x))
   return(floglik(TM, TM@x, rparams(x), x$parameters$reducedparams$transmatrix,

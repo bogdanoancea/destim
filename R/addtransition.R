@@ -28,6 +28,7 @@
 #' transitions(model)
 #' constraints(model)
 #'
+#' @export
 addtransition <- function(x,t) {
   if (class(x) != "HMM")
     stop("This function only works with HMM objects.")

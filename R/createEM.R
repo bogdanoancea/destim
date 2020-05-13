@@ -1,6 +1,6 @@
 # Creates the events matrix for a rectangular grid
 # according to the location of the towers and the S function
-
+#' @export
 createEM <- function(size, towers, S) {
   output <- matrix(0, nrow = size[1] * size[2],
                    ncol = ncol(towers))

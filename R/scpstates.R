@@ -10,11 +10,12 @@
 # observations.
 # FS: Filtered/predicted states as returned in fstates
 
-
+#' @export
 scpstates <- function(...) {
   UseMethod("scpstates")
 }
 #' @rdname scpstates
+#' @export
 scpstates.HMM <- function(x, e) {
   TM <- getTM(x)
   EM <- emissions(x)

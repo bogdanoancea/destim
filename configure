@@ -1,2 +1,2 @@
 #!/bin/sh
-R --vanilla -e 'Rcpp::compileAttributes(); library(roxygen2); roxygenize(load_code = load_source)'
+R --vanilla -e 'library(roxygen2); roxygenize(load_code = load_source); Rcpp::compileAttributes()'

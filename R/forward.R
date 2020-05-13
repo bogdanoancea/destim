@@ -33,11 +33,13 @@
 #'                              ncol = 2, sparse = TRUE)
 #' model <- initparams(model)
 #' forward(model, c(1,2,1))
-
+#'
+#' @export
 forward <- function(...) {
   UseMethod("forward")
 }
 #' @rdname forward
+#' @export
 forward.HMM <- function(x,y) return(
   fforward(getTM(x), istates(x), emissions(x), as.integer(y) - 1L)
   )

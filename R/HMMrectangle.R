@@ -22,6 +22,8 @@
 #' nstates(model)
 #' ntransitions(model)
 #' nconstraints(model)
+#'
+#' @export
 HMMrectangle <- function(x,y) {
   x <- as.integer(x[1])
   y <- as.integer(y[1])

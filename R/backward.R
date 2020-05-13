@@ -22,11 +22,12 @@
 #' model <- initparams(model)
 #' fpass <- forward(model, c(1,2,1))
 #' backward(model, c(1,2,1), fpass$scalefactors)
-
+#' @export
 backward <- function(...) {
   UseMethod("backward")
 }
 #' @rdname backward
+#' @export
 backward.HMM <- function(x,y,sfactors) return (
   fbackward(getTM(x), emissions(x), as.integer(y) - 1L, sfactors)
   )

@@ -34,6 +34,7 @@
 #' range(ptransition(model) -
 #'   gettransmatrix(model) %*% c(rparams(model), 1))
 #'
+#' @export
 minparams <- function(x) {
   if (class(x) != "HMM")
     stop("This function only works with HMM objects.")

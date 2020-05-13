@@ -12,10 +12,12 @@
 #' model <- HMM(5)
 #' nstates(model)
 #'
+#' @export
 nstates <- function(x) {
   UseMethod("nstates")
 }
 #' @rdname nstates
+#' @export
 nstates.HMM <- function(x) return(length(x$states$names))
 
 #' Number of transitions
@@ -33,10 +35,13 @@ nstates.HMM <- function(x) return(length(x$states$names))
 #' ntransitions(model)
 #' model <- addtransition(model, c(1,2))
 #' ntransitions(model)
+#'
+#' @export
 ntransitions <- function(x) {
   UseMethod("ntransitions")
 }
 #' @rdname ntransitions
+#' @export
 ntransitions.HMM <- function(x) return(ncol(x$transitions))
 
 #' Number of constraints
@@ -54,10 +59,13 @@ ntransitions.HMM <- function(x) return(ncol(x$transitions))
 #' nconstraints(model)
 #' model <- HMMrectangle(3, 3)
 #' nconstraints(model)
+#'
+#' @export
 nconstraints <- function(x) {
   UseMethod("nconstraints")
 }
 #' @rdname nconstraints
+#' @export
 nconstraints.HMM <- function(x) return(nrow(x$constraints))
 
 #' Matrix of constraints
@@ -75,10 +83,13 @@ nconstraints.HMM <- function(x) return(nrow(x$constraints))
 #' constraints(model)
 #' nconstraints(model)
 #' nrow(constraints(model)) # should agree
+#'
+#' @export
 constraints <- function(x) {
   UseMethod("constraints")
 }
 #' @rdname constraints
+#' @export
 constraints.HMM <- function(x) return(x$constraints)
 
 #' Probabilities of transition
@@ -100,10 +111,13 @@ constraints.HMM <- function(x) return(x$constraints)
 #' model <- addtransition(model,c(2,1))
 #' model <- initparams(model)
 #' ptransition(model)
+#'
+#' @export
 ptransition <- function(x) {
   UseMethod("ptransition")
 }
 #' @rdname ptransition
+#' @export
 ptransition.HMM <- function(x)
   return(as.numeric(x$parameters$transitions))
 
@@ -129,10 +143,13 @@ ptransition.HMM <- function(x)
 #' model <- initparams(model)
 #' istates(model)
 #' sum(istates(model)) # should be one
+#'
+#' @export
 istates <- function(x) {
   UseMethod("istates")
 }
 #' @rdname istates
+#' @export
 istates.HMM <- function(x) return(x$parameters$states)
 
 #' Transitions
@@ -156,10 +173,12 @@ istates.HMM <- function(x) return(x$parameters$states)
 #' model <- addtransition(model,c(1,2))
 #' model <- addtransition(model,c(2,1))
 #' transitions(model)
+#' @export
 transitions <- function(x) {
   UseMethod("transitions")
 }
 #' @rdname transitions
+#' @export
 transitions.HMM <- function(x) return(x$transitions)
 
 #' Reduced parameters
@@ -183,10 +202,13 @@ transitions.HMM <- function(x) return(x$transitions)
 #' rparams(model)
 #' ntransitions(model)
 #' length(rparams(model)) # A much smaller parameter space!
+#'
+#' @export
 rparams <- function(x) {
   UseMethod("rparams")
 }
 #' @rdname rparams
+#' @export
 rparams.HMM <- function(x) return(x$parameters$reducedparams$params)
 
 #' Transformation matrix
@@ -210,11 +232,13 @@ rparams.HMM <- function(x) return(x$parameters$reducedparams$params)
 #' model <- minparams(model)
 #' # Should be close to zero
 #' range(ptransition(model) - gettransmatrix(model) %*% c(rparams(model), 1))
-
+#'
+#' @export
 gettransmatrix <- function(x) {
   UseMethod("gettransmatrix")
 }
 #' @rdname gettransmatrix
+#' @export
 gettransmatrix.HMM <- function(x)
   return(x$parameters$reducedparams$transmatrix)
 
@@ -232,10 +256,13 @@ gettransmatrix.HMM <- function(x)
 #' model <- HMM(2)
 #' emissions(model)<-diag(2)
 #' emissions(model)
+#'
+#' @export
 emissions <- function(x) {
   UseMethod("emissions")
 }
 #' @rdname emissions
+#' @export
 emissions.HMM <- function(x) return(x$emissions)
 #' Transition matrix.
 #'
@@ -255,11 +282,13 @@ emissions.HMM <- function(x) return(x$emissions)
 #' model <- addtransition(model,c(1,2))
 #' model <- initparams(model)
 #' getTM(model)
-
+#'
+#' @export
 getTM <- function(x) {
   UseMethod("getTM")
 }
 #' @rdname getTM
+#' @export
 getTM.HMM <- function(x) {
   if (is.null(x$parameters$transitions))
      stop(paste0("[destim::getTM] Parameters of the model are ",

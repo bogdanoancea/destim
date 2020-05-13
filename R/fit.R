@@ -30,6 +30,7 @@
 #' model <- fit(model,events)
 #' logLik(model,events)
 #'
+#' @export
 fit <- function(x, e, init = FALSE, method = "constrOptim", ...) {
   if (is.null(x$parameters$reducedparams)) {
     if (is.null(x$parameters$transitions))

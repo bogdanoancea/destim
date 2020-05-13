@@ -27,6 +27,7 @@
 #' model <- initparams(model)
 #' range(constraints(model) %*% c(ptransition(model), -1)) # It should be close to zero
 #'
+#' @export
 initparams <- function(x) {
   if (class(x) != "HMM")
     stop("This function only works with HMM objects.")

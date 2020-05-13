@@ -73,11 +73,13 @@
 #' ntransitions(model1)
 #' nstates(model2)
 #' ntransitions(model2)
-
+#'
+#' @export
 HMM <- function(...) {
   UseMethod("HMM")
 }
 #' @rdname HMM
+#' @export
 HMM.integer <- function(S, TL, CT, EM = NULL, checks = TRUE) {
 
   if (missing(TL))
@@ -115,8 +117,10 @@ HMM.integer <- function(S, TL, CT, EM = NULL, checks = TRUE) {
   return(output)
 }
 #' @rdname HMM
+#' @export
 HMM.numeric <- function(S, ...) return(HMM(as.integer(S), ...))
 #' @rdname HMM
+#' @export
 HMM.character <- function(S, ...) {
   output <- HMM(length(S), ...)
   setsnames(output) <- S

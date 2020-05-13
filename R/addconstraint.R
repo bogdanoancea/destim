@@ -35,6 +35,7 @@
 #' model <- addconstraint(model,c(2,4,5))
 #' constraints(model)
 #'
+#' @export
 addconstraint <- function(x, ct) {
 
   if (class(x) != "HMM")

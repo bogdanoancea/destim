@@ -34,6 +34,7 @@
 #' istates(model)
 #' (istates(model) %*% getTM(model))
 #'
+#' @export
 initsteady <- function(x) {
   if (class(x) != "HMM")
     stop("This function only works with HMM objects.")

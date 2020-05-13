@@ -1,5 +1,6 @@
 #' Functions to modify a HMM object
 #'
+#' @export
 `rparams<-` <- function(x, value) {
   if (is.null(x$parameters$reducedparams)) {
     if (is.null(x$parameters$states))
@@ -13,6 +14,7 @@
   return(x)
 }
 
+#' @export
 `setsnames<-` <- function(x,value) {
   if (length(value) != nstates(x))
     stop("Wrong number of states")
@@ -20,6 +22,7 @@
   return(x)
 }
 
+#' @export
 `emissions<-` <- function(x, value) {
   if (is.matrix(value))
     value <- as(value, "dgCMatrix")
@@ -31,6 +34,7 @@
   return(x)
 }
 
+#' @export
 `istates<-` <- function(x,value) {
   if (length(value) != nstates(x))
     stop("Wrong number of states")
