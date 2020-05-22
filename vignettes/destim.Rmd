@@ -208,7 +208,7 @@ dim(sstates(model, obs))
 image(matrix(sstates(model, obs)[,4], ncol = 10))
 ```
 
-The function scpstates returns the (smooth) joint probability mass function for consecutive states, analogous to the usually denoted $\xi_{i j}$ probabilities in the Baum-Welch algorithm (once convergence is achieved). This time, each column represents the space bi-variant distribution matrix as follows: the probability of the consecutive pair of states $(i,j)$ can be found in the row $400(i-1) + j$.
+The function scpstates returns the (smooth) joint probability mass function for consecutive states, analogous to the usually denoted $\xi_{i j}$ probabilities in the Baum-Welch algorithm (once convergence is achieved). This time, each column represents the space bi-variant distribution matrix as follows: the probability of the consecutive pair of states $(i,j)$ can be found in the row $100(i-1) + j$.
 ```{r}
 dim(scpstates(model, obs))
 image(as.matrix(scpstates(model, obs)[,1:100 + 3*100]), xlim = c(0,1))
