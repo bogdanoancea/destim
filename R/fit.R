@@ -3,7 +3,8 @@
 #' Fits the transition probabilities of the model by maximum likelihood.
 #'
 #' The transition probabilities are fitted by ML, subject to the linear constraints
-#' specified in the model. It is possible to specify additional non linear constraints,
+#' specified in the model. The argument retrain can be used to avoid local minima.
+#' It is possible to specify additional non linear constraints,
 #' passing the suitable arguments to the optimizer.
 #'
 #' @param x A HMM model.
@@ -14,6 +15,8 @@
 #' @param method The optimization algorithm to be used.
 #' Defaults to constrOptim from package stats. The other possible choices are donlp2 and
 #' solnp.
+#' @param retrain The times the optimizer will be launched with different initial parameters.
+#' The model with higher likelihood will be returned.
 #' @param ... Arguments to be passed to the optimizer.
 #'
 #' @return The fitted model.
@@ -31,7 +34,7 @@
 #' logLik(model,events)
 #'
 #' @export
-fit <- function(x, e, init = FALSE, method = "constrOptim", ...) {
+fit <- function(x, e, init = FALSE, method = "constrOptim", retrain = 1, ...) {
   if (is.null(x$parameters$reducedparams)) {
     if (is.null(x$parameters$transitions))
       x <- initparams(x)
@@ -44,10 +47,10 @@ fit <- function(x, e, init = FALSE, method = "constrOptim", ...) {
   ci <- c(ci, trmatrix[, ncol(trmatrix)] - rep(1,length(ci)))
   TM <- createTM(x$transitions, x$parameters$transitions, nstates(x))
   if (!init) {
-    createsteady(TM)
+    pattern <- createsteadypattern(TM)
     ofun <- function(p) return(
       floglik(TM, TM@x, p, x$parameters$reducedparams$transmatrix,
-              createsteady(TM, TRUE), emissions(x), as.integer(e) - 1L)
+              createsteadyfrompattern(TM, pattern), emissions(x), as.integer(e) - 1L)
     )
   }
   else
@@ -58,27 +61,84 @@ fit <- function(x, e, init = FALSE, method = "constrOptim", ...) {
   if (method == "constrOptim") {
     if (!require("stats"))
       stop("Package states required for constrOptim method")
-    rparams(x) <- stats::constrOptim(rparams(x), ofun, NULL,
+    if (retrain == 1)
+      rparams(x) <- stats::constrOptim(rparams(x), ofun, NULL,
                     ui, ci)$par
+    else {
+      OPTbest <- stats::constrOptim(rparams(x), ofun, NULL, ui, ci)
+      for (i in 2:retrain) {
+        OPT <- stats::constrOptim(
+          inittransitions(x$constraints)[x$parameters$reducedparams$numparams],
+          ofun, NULL, ui, ci)
+        if (OPT$value < OPTbest$value)
+          OPTbest <- OPT
+      }
+      rparams(x) <- OPTbest$par
+    }
   }
   else if (method == "donlp2") {
     if (!require("Rdonlp2"))
       stop("Package Rdonlp2 required for donlp2 method")
-    rparams(x) <-
-      Rdonlp2::donlp2NLP(rparams(x), ofun,
-        par.lower = rep(0, length(rparams(x))),
-        par.upper = rep(1, length(rparams(x))),
-        ineqA = trmatrix[, -ncol(trmatrix)],
-        ineqA.lower = -trmatrix[, ncol(trmatrix)],
-        ineqA.upper = 1 - trmatrix[, ncol(trmatrix)], ...)$solution
+    if (retrain == 1)
+      rparams(x) <-
+        Rdonlp2::donlp2NLP(rparams(x), ofun,
+          par.lower = rep(0, length(rparams(x))),
+          par.upper = rep(1, length(rparams(x))),
+          ineqA = trmatrix[, -ncol(trmatrix)],
+          ineqA.lower = -trmatrix[, ncol(trmatrix)],
+          ineqA.upper = 1 - trmatrix[, ncol(trmatrix)], ...)$solution
+    else {
+      OPTbest <-
+        Rdonlp2::donlp2NLP(rparams(x), ofun,
+          par.lower = rep(0, length(rparams(x))),
+          par.upper = rep(1, length(rparams(x))),
+          ineqA = trmatrix[, -ncol(trmatrix)],
+          ineqA.lower = -trmatrix[, ncol(trmatrix)],
+          ineqA.upper = 1 - trmatrix[, ncol(trmatrix)], ...)
+      for (i in 2:retrain) {
+        OPT <-
+          Rdonlp2::donlp2NLP(
+            inittransitions(x$constraints)[x$parameters$reducedparams$numparams],
+            ofun,
+            par.lower = rep(0, length(rparams(x))),
+            par.upper = rep(1, length(rparams(x))),
+            ineqA = trmatrix[, -ncol(trmatrix)],
+            ineqA.lower = -trmatrix[, ncol(trmatrix)],
+            ineqA.upper = 1 - trmatrix[, ncol(trmatrix)], ...)
+        if (is.na(OPTbest$objective))
+          OPTbest <- OPT
+        else if (is.na(OPT$objective)) {}
+        else if (OPT$objective < OPTbest$objective)
+          OPTbest <- OPT
+      }
+      rparams(x) <- OPTbest$solution
+    }
   }
   else if (method == "solnp") {
     if (!require("Rsolnp"))
       stop("Package Rsolnp required for solnp method")
-    rparams(x) <- Rsolnp::solnp(rparams(x), ofun,
-                  ineqfun = function(MAT) trmatrix %*% c(MAT, 1),
-                  ineqLB = rep(0, nrow(trmatrix)),
-                  ineqUB = rep(1, nrow(trmatrix)), ...)$pars
+    if (retrain == 1)
+      rparams(x) <- Rsolnp::solnp(rparams(x), ofun,
+                      ineqfun = function(MAT) trmatrix %*% c(MAT, 1),
+                      ineqLB = rep(0, nrow(trmatrix)),
+                      ineqUB = rep(1, nrow(trmatrix)), ...)$pars
+    else {
+      OPTbest <-
+        Rsolnp::solnp(rparams(x), ofun,
+                      ineqfun = function(MAT) trmatrix %*% c(MAT, 1),
+                      ineqLB = rep(0, nrow(trmatrix)),
+                      ineqUB = rep(1, nrow(trmatrix)), ...)
+      for (i in 2:retrain) {
+        OPT <-
+          Rsolnp::solnp(rparams(x), ofun,
+                        ineqfun = function(MAT) trmatrix %*% c(MAT, 1),
+                        ineqLB = rep(0, nrow(trmatrix)),
+                        ineqUB = rep(1, nrow(trmatrix)), ...)
+        if (OPT$values[length(OPT$values)] < OPTbest$values[length(OPT$values)])
+          OPTbest <- OPT
+      }
+      rparams(x) <- OPTbest$pars
+    }
   }
   else stop(paste0("Method unknown: ", method))
 if (!init)
