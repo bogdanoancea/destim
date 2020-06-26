@@ -13,8 +13,8 @@
 #' to be used. Defaults to FALSE, which means that steady state inizialization will be used
 #' instead.
 #' @param method The optimization algorithm to be used.
-#' Defaults to constrOptim from package stats. The other possible choices are donlp2 and
-#' solnp.
+#' Defaults to solnp from package Rsolnp. The other possible choice is  constrOptim
+#' from package stats.
 #' @param retrain The times the optimizer will be launched with different initial parameters.
 #' The model with higher likelihood will be returned.
 #' @param ... Arguments to be passed to the optimizer.
@@ -34,7 +34,7 @@
 #' logLik(model,events)
 #'
 #' @export
-fit <- function(x, e, init = FALSE, method = "constrOptim", retrain = 1, ...) {
+fit <- function(x, e, init = FALSE, method = "solnp", retrain = 1, ...) {
   if (is.null(x$parameters$reducedparams)) {
     if (is.null(x$parameters$transitions))
       x <- initparams(x)
@@ -76,44 +76,6 @@ fit <- function(x, e, init = FALSE, method = "constrOptim", retrain = 1, ...) {
       rparams(x) <- OPTbest$par
     }
   }
-  else if (method == "donlp2") {
-    if (!require("Rdonlp2"))
-      stop("Package Rdonlp2 required for donlp2 method")
-    if (retrain == 1)
-      rparams(x) <-
-        Rdonlp2::donlp2NLP(rparams(x), ofun,
-          par.lower = rep(0, length(rparams(x))),
-          par.upper = rep(1, length(rparams(x))),
-          ineqA = trmatrix[, -ncol(trmatrix)],
-          ineqA.lower = -trmatrix[, ncol(trmatrix)],
-          ineqA.upper = 1 - trmatrix[, ncol(trmatrix)], ...)$solution
-    else {
-      OPTbest <-
-        Rdonlp2::donlp2NLP(rparams(x), ofun,
-          par.lower = rep(0, length(rparams(x))),
-          par.upper = rep(1, length(rparams(x))),
-          ineqA = trmatrix[, -ncol(trmatrix)],
-          ineqA.lower = -trmatrix[, ncol(trmatrix)],
-          ineqA.upper = 1 - trmatrix[, ncol(trmatrix)], ...)
-      for (i in 2:retrain) {
-        OPT <-
-          Rdonlp2::donlp2NLP(
-            inittransitions(x$constraints)[x$parameters$reducedparams$numparams],
-            ofun,
-            par.lower = rep(0, length(rparams(x))),
-            par.upper = rep(1, length(rparams(x))),
-            ineqA = trmatrix[, -ncol(trmatrix)],
-            ineqA.lower = -trmatrix[, ncol(trmatrix)],
-            ineqA.upper = 1 - trmatrix[, ncol(trmatrix)], ...)
-        if (is.na(OPTbest$objective))
-          OPTbest <- OPT
-        else if (is.na(OPT$objective)) {}
-        else if (OPT$objective < OPTbest$objective)
-          OPTbest <- OPT
-      }
-      rparams(x) <- OPTbest$solution
-    }
-  }
   else if (method == "solnp") {
     if (!require("Rsolnp"))
       stop("Package Rsolnp required for solnp method")
@@ -121,20 +83,24 @@ fit <- function(x, e, init = FALSE, method = "constrOptim", retrain = 1, ...) {
       rparams(x) <- Rsolnp::solnp(rparams(x), ofun,
                       ineqfun = function(MAT) trmatrix %*% c(MAT, 1),
                       ineqLB = rep(0, nrow(trmatrix)),
-                      ineqUB = rep(1, nrow(trmatrix)), ...)$pars
+                      ineqUB = rep(1, nrow(trmatrix)),
+                      control = list(trace = 0), ...)$pars
     else {
       OPTbest <-
         Rsolnp::solnp(rparams(x), ofun,
                       ineqfun = function(MAT) trmatrix %*% c(MAT, 1),
                       ineqLB = rep(0, nrow(trmatrix)),
-                      ineqUB = rep(1, nrow(trmatrix)), ...)
+                      ineqUB = rep(1, nrow(trmatrix)),
+                      control = list(trace = 0), ...)
       for (i in 2:retrain) {
         OPT <-
-          Rsolnp::solnp(rparams(x), ofun,
+          Rsolnp::solnp(inittransitions(x$constraints)[x$parameters$reducedparams$numparams],
+                        ofun,
                         ineqfun = function(MAT) trmatrix %*% c(MAT, 1),
                         ineqLB = rep(0, nrow(trmatrix)),
-                        ineqUB = rep(1, nrow(trmatrix)), ...)
-        if (OPT$values[length(OPT$values)] < OPTbest$values[length(OPT$values)])
+                        ineqUB = rep(1, nrow(trmatrix)),
+                        control = list(trace = 0), ...)
+        if (OPT$values[length(OPT$values)] < OPTbest$values[length(OPTbest$values)])
           OPTbest <- OPT
       }
       rparams(x) <- OPTbest$pars
