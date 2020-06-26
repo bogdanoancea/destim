@@ -79,27 +79,20 @@ fit <- function(x, e, init = FALSE, method = "solnp", retrain = 1, ...) {
   else if (method == "solnp") {
     if (!require("Rsolnp"))
       stop("Package Rsolnp required for solnp method")
+    lcall <- list(pars = rparams(x), fun = ofun,
+               ineqfun = function(MAT) trmatrix %*% c(MAT, 1),
+               ineqLB = rep(0, nrow(trmatrix)),
+               ineqUB = rep(1, nrow(trmatrix)))
+    if (!("control" %in% names(list(...))))
+      lcall <- c(lcall, list(control = list(trace = 0)))
+    lcall <- c(lcall, list(...))
     if (retrain == 1)
-      rparams(x) <- Rsolnp::solnp(rparams(x), ofun,
-                      ineqfun = function(MAT) trmatrix %*% c(MAT, 1),
-                      ineqLB = rep(0, nrow(trmatrix)),
-                      ineqUB = rep(1, nrow(trmatrix)),
-                      control = list(trace = 0), ...)$pars
+      rparams(x) <- do.call(Rsolnp::solnp, lcall)$pars
     else {
-      OPTbest <-
-        Rsolnp::solnp(rparams(x), ofun,
-                      ineqfun = function(MAT) trmatrix %*% c(MAT, 1),
-                      ineqLB = rep(0, nrow(trmatrix)),
-                      ineqUB = rep(1, nrow(trmatrix)),
-                      control = list(trace = 0), ...)
+      OPTbest <- do.call(Rsolnp::solnp, lcall)
       for (i in 2:retrain) {
-        OPT <-
-          Rsolnp::solnp(inittransitions(x$constraints)[x$parameters$reducedparams$numparams],
-                        ofun,
-                        ineqfun = function(MAT) trmatrix %*% c(MAT, 1),
-                        ineqLB = rep(0, nrow(trmatrix)),
-                        ineqUB = rep(1, nrow(trmatrix)),
-                        control = list(trace = 0), ...)
+        lcall[["pars"]] <- inittransitions(x$constraints)[x$parameters$reducedparams$numparams]
+        OPT <- do.call(Rsolnp::solnp, lcall)
         if (OPT$values[length(OPT$values)] < OPTbest$values[length(OPTbest$values)])
           OPTbest <- OPT
       }
