@@ -1,14 +1,12 @@
-#' Basic HMM grid model
+#' @title Basic HMM grid model.
 #'
-#' Creates a basic rectangular grid model as specified.
-#'
-#' This model is a rectangular grid where the only transitions allowed are those between
-#' contiguous tiles. Moreover, horizontal and vertical transition probabilities are
-#' equal for all tiles. Diagonal transition probabilities are equal between them too,
-#' but different from the former. These constraints mean that there are only two parameters
-#' to estimate.
-#'
-#' The emissions field is left unasigned.
+#' @description Creates a basic rectangular grid model as specified.
+#' This model is a rectangular grid where the only transitions allowed are those
+#' between contiguous tiles. Moreover, horizontal and vertical transition
+#' probabilities are equal for all tiles. Diagonal transition probabilities are
+#' equal between them too, but different from the former. These constraints mean
+#' that there are only two parameters to estimate.
+#' The emissions field is left unassigned.
 #'
 #' @param x length of the rectangle in tiles.
 #' @param y width of the rectangle in tiles.

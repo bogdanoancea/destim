@@ -1,12 +1,10 @@
-#' Adds a transition to the model
+#' @title Adds a transition to the model.
 #'
-#' The specified transition is added to the model as a
+#' @description The specified transition is added to the model as a
 #' transition with non zero probability.
-#'
 #' Since the transition probabilities from the initial state of the
 #' newly specified transition still have to sum up to one, the
 #' correspondent constraint is modified accordingly.
-#'
 #' It is not recommended to use this function to define a big model, as
 #' it is much slower than specifying all transitions in advance.
 #'

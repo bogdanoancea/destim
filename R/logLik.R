@@ -1,6 +1,6 @@
-#' Minus logLikelihood
+#' @title Minus logLikelihood
 #'
-#' Returns the minus logarithm of the likelihood given a model and a set of observations.
+#' @description Returns the minus logarithm of the likelihood given a model and a set of observations.
 #'
 #' A slightly modified version of the forward algorithm is used to compute the likelihood,
 #' to avoid store unneeded data. The sign is changed because it is usual to minimize

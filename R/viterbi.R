@@ -1,13 +1,14 @@
-#' This function returns the viterbi path.
+#' @title This function returns the viterbi path.
 #'
-#' This function implements the viterbi algorithm to return the most likely path.
+#' @description This function implements the viterbi algorithm to return the
+#' most likely path.
 #'
-# P : Transition matrix P(will go to i | is in j)
-# E : Event observation matrix P(detection event j | is in i)
-# e: Sequence of observation events. Since we are taking
-# time increase small, it is expected to have mostly missing
-# values. The first value is expected to have an observation.
-
+#' @param x The HMM model.
+#' @param e Sequence of observation events. Since we are taking
+#' time increase small, it is expected to have mostly missing
+#' values. The first value is expected to have an observation.
+#' @return The viterbi path.
+#' @keywords internal
 viterbi <- function(...) {
   UseMethod("viterbi")
 }

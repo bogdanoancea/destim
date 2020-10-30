@@ -1,10 +1,9 @@
-#' The forward part of the FB algorithm
+#' @title The forward part of the FB algorithm
 #'
-#' Calculates the forward probabilities.
-#'
+#' @description Calculates the forward probabilities.
 #' The main purpose of this function is to be combined with backward function
 #' to calculate smooth states and smooth consecutive pairwise states. This is done
-#' by functions sstates and scpstates.
+#' by functions \code{sstates} and \code{scpstates}.
 #'
 #' @param x A HMM model.
 #' @param y A vector with the observed events. It admits missing values.
@@ -16,11 +15,11 @@
 #' so that column k contains the filtered state at the same time as
 #' y[k] is observed. For missing (un)observed values, the predicted
 #' state is returned instead.
-#' \item \emph{scalefactors} is a vector that containts the likelihood
+#' \item \emph{scalefactors} is a vector that contains the likelihood
 #' of each observation conditioned on all the observation from its
 #' past. It is conveniently set to one for missing (un)observed values,
 #' so that the joint likelihood is just the cumulative product of the
-#' scalefactors.As obvious, its length coincides with the length of
+#' scalefactors. As obvious, its length coincides with the length of
 #' y.
 #' }
 #'
@@ -33,7 +32,7 @@
 #'                              ncol = 2, sparse = TRUE)
 #' model <- initparams(model)
 #' forward(model, c(1,2,1))
-#'
+#' @keywords internal
 #' @export
 forward <- function(...) {
   UseMethod("forward")

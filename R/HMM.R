@@ -1,9 +1,9 @@
-#' Class constructor for Hidden Markov models
+#' @title Class constructor for Hidden Markov models
 #'
-#' Creates a HMM object, as specified.
+#' @description Creates a HMM object, as specified.
 #'
 #' The HMM object contains five fields: states, transitions,
-#' constraints, emisions and parameters.
+#' constraints, emissions and parameters.
 #'
 #' The field states contains a character vector with the names of
 #' the states. If the constructor is given a number S, it sets the
@@ -31,8 +31,8 @@
 #' conditions, which are rows with constant term equal to one. Finally, the remaining
 #' constraints are expected to have constant term different from one (otherwise
 #' multiply the constraint by a constant). This structure, allows an efficient
-#' treatment of constraints that are equalities between pairs of transition probabilities.
-#' They are expected to be the most frequent constraints.
+#' treatment of constraints that are equalities between pairs of transition
+#' probabilities.They are expected to be the most frequent constraints.
 #'
 #' The field emissions consists in a matrix that contains the emission
 #' probabilities, where the number of rows is the number of states and
@@ -42,8 +42,9 @@
 #'
 #' The field parameters contain additional information about the
 #' probabilities of transition and the initial state of the model.
-#' Also some auxiliar information to reduce the number of parameters
-#' of the model. See initparams, minparams and initsteady.
+#' Also some auxiliary information to reduce the number of parameters
+#' of the model. See \code{initparams}, \code{minparams} and
+#' \code{initsteady}.
 #'
 #' @param S  Number or names of states. It can be either a numeric or a
 #' character.

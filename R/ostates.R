@@ -1,12 +1,14 @@
-# This function returns the observed states whenever an
-# observation is present.
+#'@title This function returns the observed states whenever an
+#' observation is present.
 
-# P : Transition matrix P(will go to i | is in j)
-# E : Event observation matrix P(detection event j | is in i)
-# e: Sequence of observation events. Since we are taking
-# time increase small, it is expected to have mostly missing
-# values. The first value is expected to have an observation.
-
+#' @param P Transition matrix P(will go to i | is in j)
+#' @param E Event observation matrix P(detection event j | is in i)
+#' @param e Sequence of observation events. Since we are taking
+#' time increase small, it is expected to have mostly missing
+#' values. The first value is expected to have an observation.
+#' @return the observed states whenever an observation is present.
+#' @keywords internal
+#' @export
 ostates <- function(P, E, e) {
   # Allocate the output matrix
   output <- matrix(0, ncol = length(e), nrow = nrow(P))

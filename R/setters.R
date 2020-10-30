@@ -1,17 +1,19 @@
-#' Set reduced parameters
+#' @title Set reduced parameters
 #'
-#' Sets the paramaters selected by minparams function.
+#' @description Sets the parameters selected by \code{minparams} function.
 #'
-#' The function minparams selects a minimal set of parameters, that fully determine the
-#' transition probabilities. This function sets those parameters and recalculates all
-#' transition probabilities from them.
+#' The function \code{minparams} selects a minimal set of parameters, that fully
+#' determine the transition probabilities. This function sets those parameters
+#' and recalculates all transition probabilities from them.
 #'
-#' The model is initialized with initparams and minparams when required.
+#' The model is initialized with \code{initparams} and \code{minparams} when
+#' required.
 #'
 #' @param x A HMM model.
 #' @param value A numeric vector with the new parameters.
 #'
-#' @return Changes parameters$reducedparams$params and parameters$transitions in the object x.
+#' @return Changes parameters$reducedparams$params and parameters$transitions
+#' in the object x.
 #'
 #' @seealso \link{minparams}, \link{rparams}, \link{initparams}
 #'
@@ -34,9 +36,9 @@
   return(x)
 }
 
-#' Set the names of the states.
+#' @title Set the names of the states.
 #'
-#' Sets the names of the states.
+#' @description Sets the names of the states.
 #'
 #' The length of the character vector must match the number of states of the model.
 #'
@@ -60,12 +62,12 @@
   return(x)
 }
 
-#' Set the emissions of the model
+#' @title Set the emissions of the model
 #'
-#' Sets the emissions of the model.
+#' @description Sets the emissions of the model.
 #'
-#' The number of rows must match the number of states. If a matrix is provided, it is converted
-#' to column major sparse matrix (dgCMatrix).
+#' The number of rows must match the number of states. If a matrix is provided,
+#' it is converted to column major sparse matrix (\code{dgCMatrix}).
 #'
 #' @param x A HMM model.
 #' @param value A (sparse column major) matrix with the likelihoods of each emission (column)
@@ -96,9 +98,9 @@
   return(x)
 }
 
-#' Set the initial states
+#' @title Set the initial states
 #'
-#' Sets the initial distribution of states.
+#' @description Sets the initial distribution of states.
 #'
 #' The length must match the number of states, and the sum of the vector must be one.
 #'

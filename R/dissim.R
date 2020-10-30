@@ -1,8 +1,8 @@
-#' Dissimilarity
+#' @title Computes the dissimilarity.
 #'
-#' This is an approximate measure
+#' @description This is an approximate measure of the dissimilarity
 #'
-#'
+#'@keywords internal
 
 dissim <- function(...) {
   UseMethod("dissim")

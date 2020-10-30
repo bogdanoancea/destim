@@ -1,5 +1,6 @@
-# These functions are for internal use and won't be exported in the future
-
+#' @title These functions are for internal use and won't be exported
+#' in the future.
+#' @keywords internal
 funique <- function(x) {
   return(cppfunique(x, sqrt(.Machine$double.eps)))
 }

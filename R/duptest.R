@@ -1,10 +1,9 @@
-#' Likelihood ratio test
+#' @title Likelihood ratio test.
 #'
-#' The likelihood ratio test is used to check whether two sets of observed events
-#' come from two devices carried by the same person.
+#' @description The likelihood ratio test is used to check whether two sets of
+#' observed events come from two devices carried by the same person.
 #'
-#'
-
+#'@keywords internal
 duptest <- function(x, y1, y2) {
   UseMethod("duptest")
 }

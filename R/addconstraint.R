@@ -1,19 +1,15 @@
-#' Adds constraints to the model
+#' @title Adds constraints to the model.
 #'
-#' The specified contraints are added to the model.
-#'
-#' If parameter ct is a vector, it is expected to be a set of transition
+#' @description The specified constraints are added to the model.
+#' If parameter \code{ct} is a vector, it is expected to be a set of transition
 #' probabilities indexed as in field transitions of the model. In this
-#' case the constraint added is the equality between the refered probabilities of
+#' case the constraint added is the equality between the referred probabilities of
 #' transition.
-#'
-#' If parameter ct is a matrix, it is expected to be a system of additional
+#' If parameter \code{ct} is a matrix, it is expected to be a system of additional
 #' linear equalities that the model must fulfill. Thus, the new equations
 #' are added to the field constraints of the model.
-#'
-#' While it is possible to use a matrix to add equality constraints, it is not recommended
-#' because of performance.
-#'
+#' While it is possible to use a matrix to add equality constraints, it is not
+#' recommended because of performance.
 #' Previous constraints of the model are preserved.
 #'
 #' @param x A HMM object.

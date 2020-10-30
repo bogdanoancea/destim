@@ -1,7 +1,6 @@
-#' Initializer for HMM objects
+#' @title Initializer for HMM objects
 #'
-#' Sets initial parameters for a HMM object, as specified.
-#'
+#' @description Sets initial parameters for a HMM object, as specified.
 #' The field parameters of the HMM object, which includes both
 #' initial state and transition probabilities, is initialized at
 #' random.

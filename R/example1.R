@@ -1,5 +1,7 @@
-#' This is just an example
-#'
+#' This is just an example of how to use \pkg{destim}
+#' @description This is just an example of how to use \pkg{destim} to compute the
+#' posterior location probabilities of the devices.
+#' @references \url{https://github.com/MobilePhoneESSnetBigData}
 #' @examples
 #' # Local probabilities of transition
 #' mask <- matrix(c(0.00001, 0.00320, 0.00001,

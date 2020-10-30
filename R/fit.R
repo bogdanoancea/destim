@@ -1,7 +1,6 @@
-#' Fits a HMM model
+#'@title  Fits a HMM model
 #'
-#' Fits the transition probabilities of the model by maximum likelihood.
-#'
+#' @description Fits the transition probabilities of the model by maximum likelihood.
 #' The transition probabilities are fitted by ML, subject to the linear constraints
 #' specified in the model. The argument retrain can be used to avoid local minima.
 #' It is possible to specify additional non linear constraints,
@@ -10,13 +9,13 @@
 #' @param x A HMM model.
 #' @param e A vector with the observed events. It admits missing values.
 #' @param init Logical specifying whether the initial state found in x is going
-#' to be used. Defaults to FALSE, which means that steady state inizialization will be used
-#' instead.
+#' to be used. Defaults to FALSE, which means that steady state initialization
+#' will be used instead.
 #' @param method The optimization algorithm to be used.
-#' Defaults to solnp from package Rsolnp. The other possible choice is  constrOptim
-#' from package stats.
-#' @param retrain The times the optimizer will be launched with different initial parameters.
-#' The model with higher likelihood will be returned.
+#' Defaults to \code{solnp} from package \pkg{Rsolnp}. The other possible choice
+#' is  \code{constrOptim} from package \pkg{stats}.
+#' @param retrain The times the optimizer will be launched with different
+#' initial parameters. The model with higher likelihood will be returned.
 #' @param ... Arguments to be passed to the optimizer.
 #'
 #' @return The fitted model.

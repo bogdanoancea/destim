@@ -1,6 +1,6 @@
-#' Number of states
+#' @title Number of states.
 #'
-#' Returns the number of states from a HMM object.
+#' @description Returns the number of states from a HMM object.
 #'
 #' @param x the HMM object.
 #'
@@ -20,9 +20,9 @@ nstates <- function(x) {
 #' @export
 nstates.HMM <- function(x) return(length(x$states$names))
 
-#' Number of transitions
+#' @title Number of transitions.
 #'
-#' Returns the number of possible transitions from a HMM object.
+#' @description Returns the number of possible transitions from a HMM object.
 #'
 #' @param x the HMM object.
 #'
@@ -44,9 +44,9 @@ ntransitions <- function(x) {
 #' @export
 ntransitions.HMM <- function(x) return(ncol(x$transitions))
 
-#' Number of constraints
+#' @title Number of constraints.
 #'
-#' Returns the number of constraints from a HMM object.
+#' @description Returns the number of constraints from a HMM object.
 #'
 #' @param x the HMM object.
 #'
@@ -68,9 +68,9 @@ nconstraints <- function(x) {
 #' @export
 nconstraints.HMM <- function(x) return(nrow(x$constraints))
 
-#' Matrix of constraints
+#' @title Matrix of constraints.
 #'
-#' Returns the matrix of constraints from a HMM object
+#' @description Returns the matrix of constraints from a HMM object.
 #'
 #' @param x the HMM object.
 #'
@@ -92,10 +92,9 @@ constraints <- function(x) {
 #' @export
 constraints.HMM <- function(x) return(x$constraints)
 
-#' Probabilities of transition
+#' @title Probabilities of transition.
 #'
-#' Returns the probabilities of transition from a HMM object.
-#'
+#' @description Returns the probabilities of transition from a HMM object.
 #' The object has to be initialized with \code{\link{initparams}},
 #' otherwise it will return numeric(0). The order is row major.
 #'
@@ -121,10 +120,9 @@ ptransition <- function(x) {
 ptransition.HMM <- function(x)
   return(as.numeric(x$parameters$transitions))
 
-#' Initial state probabilities
+#' @title Initial state probabilities.
 #'
-#' Returns the initial state probabilities from a HMM object.
-#'
+#' @description Returns the initial state probabilities from a HMM object.
 #' The object has to be initialized with \code{\link{initparams}},
 #' which generates a random initial state. The vector of probabilities
 #' follows the same order as the states, so \code{ptransition(model)[i]} is the
@@ -152,14 +150,13 @@ istates <- function(x) {
 #' @export
 istates.HMM <- function(x) return(x$parameters$states)
 
-#' Transitions
+#' @title Transitions.
 #'
-#' Returns the list of possible transitions from a HMM object.
-#'
+#' @description Returns the list of possible transitions from a HMM object.
 #' Each column represents a transition, the first row is the initial state and the
-#' second row is the final state. The transitions are ordered, first on the initial state and
-#' then on the final state. Any transition not listed in the matrix is supposed to be
-#' not possible (zero probability).
+#' second row is the final state. The transitions are ordered, first on the initial
+#' state and then on the final state. Any transition not listed in the matrix
+#' is supposed to be not possible (zero probability).
 #'
 #' @param x the HMM object.
 #'
@@ -181,13 +178,12 @@ transitions <- function(x) {
 #' @export
 transitions.HMM <- function(x) return(x$transitions)
 
-#' Reduced parameters
+#' @title Reduced parameters.
 #'
-#' Returns the values of the minimal set of parameters.
-#'
-#' The minimal set of parameters are selected by \code{\link{minparams}}. They are a few
-#' probabilites of transition that determine the remaining ones because of the constraints.
-#' They are used to fit the model.
+#' @description Returns the values of the minimal set of parameters.
+#' The minimal set of parameters are selected by \code{\link{minparams}}.
+#' They are a few probabilities of transition that determine the remaining ones
+#' because of the constraints. They are used to fit the model.
 #'
 #' @param x the HMM object.
 #'
@@ -211,14 +207,14 @@ rparams <- function(x) {
 #' @export
 rparams.HMM <- function(x) return(x$parameters$reducedparams$params)
 
-#' Transformation matrix
+#' @title Transformation matrix
 #'
-#' Returns the transformation matrix that transforms the minimal parameters into
-#' the probabilities of transition.
-#'
-#' The transformation matrix allows obtains the probabilities of transition from the minimal
-#' set of parameters. If we append an one at the end of the vector of parameters, the product
-#' of this matrix by such vector is the probabilities of transition vector.
+#' @description Returns the transformation matrix that transforms the minimal
+#' parameters into the probabilities of transition.
+#' The transformation matrix allows obtains the probabilities of transition from
+#' the minimal set of parameters. If we append an one at the end of the vector of
+#' parameters, the product of this matrix by such vector is the probabilities of
+#' transition vector.
 #'
 #' @param x the HMM object.
 #'
@@ -242,9 +238,9 @@ gettransmatrix <- function(x) {
 gettransmatrix.HMM <- function(x)
   return(x$parameters$reducedparams$transmatrix)
 
-#' Emissions matrix
+#' @title Emissions matrix
 #'
-#' Returns the matrix of emissions from a HMM object.
+#' 2description Returns the matrix of emissions from a HMM object.
 #'
 #' @param x the HMM object.
 #'
@@ -264,11 +260,11 @@ emissions <- function(x) {
 #' @rdname emissions
 #' @export
 emissions.HMM <- function(x) return(x$emissions)
-#' Transition matrix.
+
+#' @title Transition matrix.
 #'
-#' Returns the transition matrix from a HMM object.
-#'
-#' The transition matrix is represented as row major. This way its transpose matrix
+#' @description Returns the transition matrix from a HMM object.
+#'The transition matrix is represented as row major. This way its transpose matrix
 #' which is used to left multiply the state is column major.
 #'
 #' @param x  the HMM object.

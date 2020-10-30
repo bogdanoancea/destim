@@ -1,19 +1,21 @@
-#' Smooth states
+#' @title Smooth states
 #'
-#' Returns the smooth states from the forward-backward algorithm.
+#' @description Returns the smooth states from the forward-backward algorithm.
 #'
-#' Smooth states are the marginal of the state conditional on the observations, for each time.
-#' This agrees with the so called \eqn{\gamma} from the Baum-Welch algorithm.
+#' Smooth states are the marginal of the state conditional on the observations,
+#' for each time. This agrees with the so called \eqn{\gamma} from the Baum-Welch
+#' algorithm.
 #'
-#' It is returned as a matrix, so that the smooth state for time instant i is the column i of
-#' the matrix.
+#' It is returned as a matrix, so that the smooth state for time instant i is the
+#' column i of the matrix.
 #'
 #' @param x A HMM model.
 #' @param e A vector with the observed events. It admits missing values.
 #'
-#' @return A sparse matrix. The number of rows is the number of states, and the number of columns
-#' is the number of observed events. Each column of the output matrix corresponds to the
-#' probability mass function for the state, so it sums up to one.
+#' @return A sparse matrix. The number of rows is the number of states, and the
+#' number of columns is the number of observed events. Each column of the output
+#' matrix corresponds to the probability mass function for the state, so it sums
+#' up to one.
 #'
 #' @seealso \link{HMM}, \link{scpstates}, \link{backward}
 #'

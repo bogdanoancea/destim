@@ -1,4 +1,4 @@
-#' This is just an example
+#' This is just an example on how to use functions from \pkg{destim}.
 #'
 #' @examples
 #' #' #Towers position

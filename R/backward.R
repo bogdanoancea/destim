@@ -1,10 +1,9 @@
-#' The backward part of the FB algorithm
+#' @title The backward part of the FB algorithm.
 #'
-#' Calculates the backward probabilities.
-#'
+#' @description Calculates the backward probabilities.
 #' The main purpose of this function is to be combined with forward function
 #' to calculate smooth states and smooth consecutive pairwise states. This is done
-#' by functions sstates and scpstates.
+#' by functions \code{sstates} and \code{scpstates}.
 #'
 #' @param x A HMM model.
 #' @param y A vector with the observed events. It admits missing values.
@@ -22,6 +21,7 @@
 #' model <- initparams(model)
 #' fpass <- forward(model, c(1,2,1))
 #' backward(model, c(1,2,1), fpass$scalefactors)
+#' @keywords internal
 #' @export
 backward <- function(...) {
   UseMethod("backward")

@@ -1,8 +1,7 @@
-#' Returns \eqn{\xi} like in the Baum-Welch algorithm
+#' @title Returns \eqn{\xi} like in the Baum-Welch algorithm.
 #'
-#' Returns the smooth joint probability mass function for consecutive states, which is usually
-#' called \eqn{\xi} in the Baum-Welch algorithm.
-#'
+#' @description Returns the smooth joint probability mass function for consecutive
+#' states, which is usually called \eqn{\xi} in the Baum-Welch algorithm.
 #' Smooth states are marginal but as they are far to be independent it is convenient to
 #' have some information about their dependence. This function returns the joint probability
 #' mass function for two time consecutive states, conditional on the observations. This agrees

@@ -1,6 +1,6 @@
-#' Reparametrizes a HMM model with a minimal set of parameters.
+#' @title Reparametrizes a HMM model with a minimal set of parameters.
 #'
-#' Finds a minimal set of parameters that fully determine the
+#' @description Finds a minimal set of parameters that fully determine the
 #' probabilities of transition.
 #'
 #' This function avoids to solve a high dimensional optimization

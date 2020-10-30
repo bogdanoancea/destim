@@ -1,7 +1,9 @@
-# Gets the row of the events matrix corresponding to
-# a point from a rectangular grid according to the location
-# of the towers and the S function
-
+#' @title Gets the the row of the events matrix.
+#'
+#' @description Gets the row of the events matrix corresponding to
+#' a point from a rectangular grid according to the location
+#' of the towers and the S function
+#' @keywords internal
 getER <- function(point, towers, S) {
   towers <- towers - matrix(point, nrow = 2, ncol = ncol(towers))
   distances <- apply(towers, 2, norm, type = "2")
