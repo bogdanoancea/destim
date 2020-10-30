@@ -3,9 +3,7 @@
 \name{emissions}
 \alias{emissions}
 \alias{emissions.HMM}
-\title{Emissions matrix
-
-2description Returns the matrix of emissions from a HMM object.}
+\title{Emissions matrix}
 \usage{
 emissions(x)
 
@@ -18,9 +16,7 @@ emissions(x)
 A column major sparse matrix as in \code{\link{HMM}}.
 }
 \description{
-Emissions matrix
-
-2description Returns the matrix of emissions from a HMM object.
+Returns the matrix of emissions from a HMM object.
 }
 \examples{
 model <- HMM(2)

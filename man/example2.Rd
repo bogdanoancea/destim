@@ -86,3 +86,4 @@ geom_line(data = dists, aes(x = T, y = sdist), colour = "green") +
 geom_line(data = dists, aes(x = T, y = fdist), colour = "red")
 
 }
+\keyword{internal}

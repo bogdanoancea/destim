@@ -1,5 +1,5 @@
 #' This is just an example on how to use functions from \pkg{destim}.
-#'
+#' @keywords internal
 #' @examples
 #' #' #Towers position
 #' data(towers)

@@ -69,3 +69,4 @@ geom_line(data = dists, aes(x = T, y = fdist), colour = "red")
 \references{
 \url{https://github.com/MobilePhoneESSnetBigData}
 }
+\keyword{internal}

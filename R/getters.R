@@ -240,7 +240,7 @@ gettransmatrix.HMM <- function(x)
 
 #' @title Emissions matrix
 #'
-#' 2description Returns the matrix of emissions from a HMM object.
+#' @description Returns the matrix of emissions from a HMM object.
 #'
 #' @param x the HMM object.
 #'
