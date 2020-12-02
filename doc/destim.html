@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<meta name="author" content="Luis Sanguiao" />
+
+<meta name="date" content="2020-12-02" />
+
+<title>Introduction to destim package</title>
+
+
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css" data-origin="pandoc">
+code.sourceCode > span { display: inline-block; line-height: 1.25; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode { white-space: pre; position: relative; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+code.sourceCode { white-space: pre-wrap; }
+code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    for (var j = 0; j < rules.length; j++) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") continue;
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') continue;
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">Introduction to destim package</h1>
+<h4 class="author">Luis Sanguiao</h4>
+<h4 class="date">2020-12-02</h4>
+
+
+
+<p>This vignette contains an introduction to <em>destim</em>: its main purpose, syntax and some technical details of its internal behaviour. Some basic knowledge about Hidden Markov Models would be useful to understand how the package works, but not essential to follow this vignette.</p>
+<div id="location-of-devices" class="section level2">
+<h2>Location of devices</h2>
+<p>This section contains a brief explanation about the intended use of the package and some remarks on the methodology.</p>
+<div id="introduction" class="section level3">
+<h3>Introduction</h3>
+<p>This package purpose is to estimate the spatial distribution of the devices, which corresponds to an intermediate step in the general methodology framework described in <span class="citation">WPIDeliv1 (2019)</span>.</p>
+<p>The network events are the result of the constant interaction between a mobile device and a telecommunication network. While the information comprised in these events can be quite complex (and rich), since we are mostly interested in geolocation, a space likelihood that summarizes the event is all we need. The transformation from the network events to the likelihood is quite technical and clearly corresponds to the mobile network operators (MNO), see <span class="citation">WPIDeliv1 (2019)</span> for more details.</p>
+<p>By space likelihood, we mean the likelihood of the event conditioned on the position of the device. It is quite obvious to identify this likelihood with the emission probabilities of a Hidden Markov model.</p>
+</div>
+<div id="the-model" class="section level3">
+<h3>The model</h3>
+<p>So, we propose a Hidden Markov model to describe the movement of the devices. Those models are quite general and flexible, can be made simple or as complex as wished. Unlike usual, we are not going to estimate the emission probabilities, that as said we consider known.</p>
+<p>As we are mainly interested in estimate location, and observation events are expected to give mostly information about it, location itself is a natural choice as state of the model. Since we are considering a tessellation of the map, each possible state would be a tile.</p>
+<p>While this could be the simpler approach, it is important to note that more complexity in the state-space might be useful. For example, we might want to represent a car moving north in a highway and a car moving south in the same tile (the tile contains both lanes) by different states, as they are expected to go next to different tiles.</p>
+<p>So, if we denote by <span class="math inline">\(n\)</span> the number of tiles, we are going to have not less than <span class="math inline">\(n\)</span> states, and possibly more, so let us say we have <span class="math inline">\(O(n)\)</span> states. In a Hidden Markov model, this means that we have <span class="math inline">\(O(n^2)\)</span> transition probabilities to estimate. Of course, this is not viable, so we are going to fix to zero all transition probabilities to non-contiguous tiles.</p>
+<p>Note that in practice, we can do this without losing generality, because given an upper bound for speed <span class="math inline">\(V\)</span> and a lower bound <span class="math inline">\(E\)</span> for the distance between non-contiguous tiles, we can set <span class="math inline">\(\Delta t = \frac{E}{V}\)</span> and the <em>jump</em> will no longer be possible.</p>
+<p>Now, we have <span class="math inline">\(O(n)\)</span> non zero transitions, which is more affordable, but still very expensive. If we want to reduce this complexity, one option is to classify the states in a certain number of classes, and constrain the transition probabilities to be equal for tiles of the same kind. This only makes sense for periodic tesselations, so it is a strong argument to use periodic tesselations better than other possible choices (Voronoi, BSA, etc.). This is not a limitation of the package though, so it is still possible to estimate models based in non-periodic tilings, but <span class="math inline">\(O(n)\)</span> parameters would have to be estimated or more complex constraints would have to be specified. In practice, the package allows any linear constraint between the transition probabilities. There is also some support for non linear constraints.</p>
+<p>Thus, we can use constraints to reduce the number of parameters as much as wanted. It is a good idea to keep small the number of (free) parameters: on one hand the likelihood optimization becomes less computationally expensive and on the other hand we get a more parsimonious model.</p>
+</div>
+<div id="fitting-the-model" class="section level3">
+<h3>Fitting the model</h3>
+<p>Once we have defined an appropiate model for our problem, the next step is to estimate the (hopefully few) free parameters. As has been already stated, emissions are known, so there are no emission parameters to fit. The initial state is either fixed or set to steady state, so the only parameters to fit in practice are the probabilities of transition.</p>
+<p>The method used to estimate the parameters is maximum likelihood, and the forward algorithm computes the (minus) log-likelihood. A constrained optimization is then done. Note that EM algorithm is generally not a good choice for constrained problems, so it is not used in the package.</p>
+<p>To get the objective function and the constraints, some previous steps are required to reduce the dimension of the search space. Let <span class="math inline">\(P\)</span> be the column vector of transition probabilities. The linear constraints can be represented as the augmented matrix <span class="math inline">\((A \vert B)\)</span> so that <span class="math inline">\(AP = B\)</span>. After a pivoted QR decomposition is done, we have <span class="math inline">\(R \tilde{P} = Q&#39; B\)</span> where <span class="math inline">\(\tilde{P}\)</span> is a permutation of <span class="math inline">\(P\)</span> and <span class="math inline">\(R\)</span> an upper triangular matrix with non decreasing diagonal elements. Moreover we can express <span class="math inline">\(R\)</span> in blocks as: <span class="math display">\[
+R = \left(
+\begin{array}{c c }
+R_{11} &amp; R_{12} \\
+0 &amp; 0
+\end{array}
+\right)
+\]</span> where <span class="math inline">\(R_{11}\)</span> is a full-rank square upper diagonal matrix. Accordingly we can define blocks for <span class="math inline">\(Q\)</span> and <span class="math inline">\(\tilde{P}\)</span>: <span class="math display">\[\begin{align}
+Q &amp; = \left( 
+\begin{array}{c c}
+Q_1 &amp; Q_2
+\end{array}
+\right) \\
+\tilde{P} &amp; = \left(
+\begin{array}{c}
+\tilde{P}_1 \\
+\tilde{P}_2
+\end{array}
+\right)
+\end{align}\]</span></p>
+<p>Note that <span class="math inline">\(Q_2&#39; B = 0\)</span>, otherwise the constraints can not be fulfilled. The variables in <span class="math inline">\(\tilde{P}_2\)</span> are taken as the free parameters, because being <span class="math inline">\(R_{11}\)</span> full-rank, we have <span class="math inline">\(\tilde{P}_1 = R_{11}^{-1}(Q_1&#39;B - R_{12} \tilde{P}_2)\)</span> so <span class="math inline">\(\tilde{P}_2\)</span> determines <span class="math inline">\(\tilde{P}_1\)</span>. These free parameters are transition probabilities and fully determine the transition matrix and thus the likelihood. Moreover, the equality constraints have vanished and now we only have to impose that transition probabilities are between zero and one. Obviously those are linear constraints for <span class="math inline">\(\tilde{P}_2\)</span>, so all we have to do is a linear constrained non-linear optimization in the same space. The linear contraints may seem to be a lot, but in practice, a good modeling will make most of the constraints equal, as most of the transition probabilities are going to be equal.</p>
+<p>Usually, algorithms for constrained optimization will require an initial value in the interior of the feasible region. To get such initial value, the following algorithm is used:</p>
+<ol style="list-style-type: decimal">
+<li>Set transition probabilities to independent uniform <span class="math inline">\((0,1)\)</span> random variables.</li>
+<li>Now the constraints do not hold, so the closest point in the constrained space is got through Lagrange multipliers.</li>
+<li>Now some of the probabilities might be greater than one or smaller than zero. Those are set once again to independent uniforms.</li>
+<li>Repeat steps 2 and 3 till all transition probabilities are between zero and one.</li>
+</ol>
+<p>As already stated, the initial state is set to steady if not fixed. The steady state is calculated as the (normalized to sum up one) solution to <span class="math inline">\((T - I)x = 0\)</span>, where <span class="math inline">\(T\)</span> is the transition matrix, <span class="math inline">\(I\)</span> the identity and the last component of <span class="math inline">\(x\)</span> is set to one divided by its dimension. This should be enough because these Markov chains are expected to be both irreducible and aperiodic, otherwise we would have strange movement restrictions.</p>
+</div>
+<div id="the-outputs" class="section level3">
+<h3>The outputs</h3>
+<p>Once the model has been fit, we can estimate the smooth states by means of the forward-backward algorithm. The smooth states are the mass probability function of the states given the observed data (and the model), thus they kind of summarize all the information available for a given time <span class="math inline">\(t\)</span>. So one of the outputs of the package are the smooth states, that can be aggregated to get a space distribution of the number of devices as explained in <span class="citation">WPIDeliv1 (2019)</span>, section 4.2.</p>
+<p>The other main output of the package is the posterior joint mass probability function for two consecutive instants <span class="math inline">\(t, t + \Delta t\)</span> of the states. As it is a posterior probability, it is once again conditioned on all the information available, but it is more dynamic because its time reference is now an interval. A possible analogy would be the smooth positions and speeds of a particle. The former would correspond to position and the later to speed.</p>
+<p>Both outputs are needed to estimate the target population.</p>
+</div>
+</div>
+<div id="syntax-and-basic-usage" class="section level2">
+<h2>Syntax and basic usage</h2>
+<p>This section explains briefly the main functions of the package.</p>
+<div id="modeling" class="section level3">
+<h3>Modeling</h3>
+<p>Obviously, the first step is to create a model. In <em>destim</em>, the primary model creator is the function HMM.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1"></a>model &lt;-<span class="st"> </span><span class="kw">HMM</span>(<span class="dv">5</span>)</span></code></pre></div>
+<p>When the first parameter is a number, it contains the number of states, so we have five states. Since we have not specified a list of transitions, all states transition to themselves and so there are only five transitions too.</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a><span class="kw">nstates</span>(model)</span>
+<span id="cb2-2"><a href="#cb2-2"></a><span class="co">#&gt; [1] 5</span></span>
+<span id="cb2-3"><a href="#cb2-3"></a><span class="kw">ntransitions</span>(model)</span>
+<span id="cb2-4"><a href="#cb2-4"></a><span class="co">#&gt; [1] 5</span></span>
+<span id="cb2-5"><a href="#cb2-5"></a><span class="kw">transitions</span>(model)</span>
+<span id="cb2-6"><a href="#cb2-6"></a><span class="co">#&gt;      [,1] [,2] [,3] [,4] [,5]</span></span>
+<span id="cb2-7"><a href="#cb2-7"></a><span class="co">#&gt; [1,]    1    2    3    4    5</span></span>
+<span id="cb2-8"><a href="#cb2-8"></a><span class="co">#&gt; [2,]    1    2    3    4    5</span></span></code></pre></div>
+<p>The transitions with non zero probability are represented by an integer matrix with two rows, where each column is a transition. The first column is the initial state and the second the final state. Of course, the states are represented by an integer number. The columns of the matrix are ordered first by initial state and then by final state.</p>
+<p>Now, let us look at the constraints.</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1"></a><span class="kw">constraints</span>(model)</span>
+<span id="cb3-2"><a href="#cb3-2"></a><span class="co">#&gt; 5 x 6 sparse Matrix of class &quot;dgRMatrix&quot;</span></span>
+<span id="cb3-3"><a href="#cb3-3"></a><span class="co">#&gt;                 </span></span>
+<span id="cb3-4"><a href="#cb3-4"></a><span class="co">#&gt; [1,] 1 . . . . 1</span></span>
+<span id="cb3-5"><a href="#cb3-5"></a><span class="co">#&gt; [2,] . 1 . . . 1</span></span>
+<span id="cb3-6"><a href="#cb3-6"></a><span class="co">#&gt; [3,] . . 1 . . 1</span></span>
+<span id="cb3-7"><a href="#cb3-7"></a><span class="co">#&gt; [4,] . . . 1 . 1</span></span>
+<span id="cb3-8"><a href="#cb3-8"></a><span class="co">#&gt; [5,] . . . . 1 1</span></span></code></pre></div>
+<p>As we have not specified any constraints, one constraint by state is introduced, the sum of the transition probabilities fixed one initial state has to be one. Otherwise, the transition matrix would not be stochastic. In general, the package adjusts this specific kind of constraints automatically.</p>
+<p>The constraints are represented as the augmented matrix of a linear system of equations. The transition probabilities must fulfill the equations, with the same order as shown in transitions function. So the first coefficient in each row is for the transition probability of the transition shown in the first column of the matrix of transitions, and so on.</p>
+<p>Both transitions and constraints can be specified as parameters when creating the model. It is also possible to add transitions and constraints later.</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1"></a>model &lt;-<span class="st"> </span><span class="kw">addtransition</span>(model,<span class="kw">c</span>(<span class="dv">1</span>,<span class="dv">2</span>))</span>
+<span id="cb4-2"><a href="#cb4-2"></a>model &lt;-<span class="st"> </span><span class="kw">addtransition</span>(model,<span class="kw">c</span>(<span class="dv">2</span>,<span class="dv">3</span>))</span>
+<span id="cb4-3"><a href="#cb4-3"></a>model &lt;-<span class="st"> </span><span class="kw">addconstraint</span>(model,<span class="kw">c</span>(<span class="dv">2</span>,<span class="dv">4</span>))</span>
+<span id="cb4-4"><a href="#cb4-4"></a><span class="kw">transitions</span>(model)</span>
+<span id="cb4-5"><a href="#cb4-5"></a><span class="co">#&gt;      [,1] [,2] [,3] [,4] [,5] [,6] [,7]</span></span>
+<span id="cb4-6"><a href="#cb4-6"></a><span class="co">#&gt; [1,]    1    1    2    2    3    4    5</span></span>
+<span id="cb4-7"><a href="#cb4-7"></a><span class="co">#&gt; [2,]    1    2    2    3    3    4    5</span></span>
+<span id="cb4-8"><a href="#cb4-8"></a><span class="kw">constraints</span>(model)</span>
+<span id="cb4-9"><a href="#cb4-9"></a><span class="co">#&gt; 6 x 8 sparse Matrix of class &quot;dgRMatrix&quot;</span></span>
+<span id="cb4-10"><a href="#cb4-10"></a><span class="co">#&gt;                         </span></span>
+<span id="cb4-11"><a href="#cb4-11"></a><span class="co">#&gt; [1,]  . 1 . -1  .  . . .</span></span>
+<span id="cb4-12"><a href="#cb4-12"></a><span class="co">#&gt; [2,] -1 . 1  .  .  . . .</span></span>
+<span id="cb4-13"><a href="#cb4-13"></a><span class="co">#&gt; [3,]  . . .  .  . -1 1 .</span></span>
+<span id="cb4-14"><a href="#cb4-14"></a><span class="co">#&gt; [4,]  . . .  . -1  . 1 .</span></span>
+<span id="cb4-15"><a href="#cb4-15"></a><span class="co">#&gt; [5,]  . . .  .  .  . 1 1</span></span>
+<span id="cb4-16"><a href="#cb4-16"></a><span class="co">#&gt; [6,]  . 1 1  .  .  . . 1</span></span></code></pre></div>
+<p>Now it becomes possible to transition from state 1 to state 2, and from state 2 to state 3. Moreover, we have added an equality constraint: the second transition probability is equal to the fourth one. In the matrix of transitions we can see that those transitions are the transition from one to two and from two to three respectively, that we have just added.</p>
+<p>The constraints matrix is a row major sparse matrix. When the second parameter of addconstraint is a vector, it is expected to reference two transitions whose probabilities are equal. The still transitions (from one state to itself), should not be referenced as they are treated automatically so all transition probabilities starting from any fixed state sum up to one. The purpose of these <em>equality constraints</em> is to improve performance as they might be a lot and can be treated easily.</p>
+<p>When the second parameter of addconstraint is a matrix, it is just row bound to the matrix of constraints. This is intended to add more general linear constraints, and it is not recommended to add equality constraints this way, as performance might decrease notably. However, (non automatic) equalities that involve still transitions have to be introduced this way.</p>
+<p>The emission probabilities are also stored in a matrix, where the element <span class="math inline">\(e_{i j}\)</span> is the probability of the event <span class="math inline">\(j\)</span> to happen, knowing that the device is placed in tile <span class="math inline">\(i\)</span>. Of course, the number of possible events is expected to be much smaller than the number of actually observed events. It is possible, though, that the number of columns of the emissions matrix matches the number of actually observed events. This way we do not save memory with the matrix, but it allows us to do the estimations even for a continuous space of observable events.</p>
+<p>Note that, in particular, if any possible event corresponds to a column of the matrix of emissions, each row sums to one. This does not happen in general, as the columns do not need to be exhaustive, and in the continous case they do not even can.</p>
+<p>As we have not specified the emission probabilities, they are set to NULL by default.</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1"></a><span class="kw">emissions</span>(model)</span>
+<span id="cb5-2"><a href="#cb5-2"></a><span class="co">#&gt; NULL</span></span>
+<span id="cb5-3"><a href="#cb5-3"></a><span class="kw">emissions</span>(model)&lt;-<span class="kw">matrix</span>(<span class="kw">c</span>(<span class="fl">0.3</span>, <span class="fl">0.3</span>, <span class="fl">0.7</span>, <span class="fl">0.9</span>, <span class="fl">0.9</span>,</span>
+<span id="cb5-4"><a href="#cb5-4"></a>                           <span class="fl">0.7</span>, <span class="fl">0.7</span>, <span class="fl">0.3</span>, <span class="fl">0.1</span>, <span class="fl">0.1</span>),</span>
+<span id="cb5-5"><a href="#cb5-5"></a>                         <span class="dt">nrow =</span> <span class="dv">5</span>, <span class="dt">ncol =</span> <span class="dv">2</span>)</span>
+<span id="cb5-6"><a href="#cb5-6"></a><span class="kw">emissions</span>(model)</span>
+<span id="cb5-7"><a href="#cb5-7"></a><span class="co">#&gt; 5 x 2 sparse Matrix of class &quot;dgCMatrix&quot;</span></span>
+<span id="cb5-8"><a href="#cb5-8"></a><span class="co">#&gt;             </span></span>
+<span id="cb5-9"><a href="#cb5-9"></a><span class="co">#&gt; [1,] 0.3 0.7</span></span>
+<span id="cb5-10"><a href="#cb5-10"></a><span class="co">#&gt; [2,] 0.3 0.7</span></span>
+<span id="cb5-11"><a href="#cb5-11"></a><span class="co">#&gt; [3,] 0.7 0.3</span></span>
+<span id="cb5-12"><a href="#cb5-12"></a><span class="co">#&gt; [4,] 0.9 0.1</span></span>
+<span id="cb5-13"><a href="#cb5-13"></a><span class="co">#&gt; [5,] 0.9 0.1</span></span></code></pre></div>
+<p>Emission probabilities are expected to be computed separately, so the model is ready to directly insert the emissions matrix.</p>
+<p>Of course, in practice models will have many states and will be created automatically. While the purpose of this package is estimation and not automatic modeling (at least for the moment), some functions have been added to ease the construction of example models.</p>
+<p>The function HMMrectangle creates a rectangle model. This model represents a rectangular grid with square tiles, where you can only stay in the same tile or go to a contiguous tile. This means that there are nine non zero transition probabilities by tile. Moreover, horizontal and vertical transitions have the same probability, and diagonal transitions also have the same probability (but different to vertical and horizontal).</p>
+<p>As obvious, the rectangle model only have two free parameters to fit, but the number of transitions can be very high even for small rectangles.</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1"></a>model &lt;-<span class="st"> </span><span class="kw">HMMrectangle</span>(<span class="dv">10</span>,<span class="dv">10</span>)</span>
+<span id="cb6-2"><a href="#cb6-2"></a><span class="kw">ntransitions</span>(model)</span>
+<span id="cb6-3"><a href="#cb6-3"></a><span class="co">#&gt; [1] 784</span></span>
+<span id="cb6-4"><a href="#cb6-4"></a><span class="kw">nconstraints</span>(model)</span>
+<span id="cb6-5"><a href="#cb6-5"></a><span class="co">#&gt; [1] 782</span></span></code></pre></div>
+<p>A small rectangle of 10x10 tiles has 784 transitions! Fortunatelly, we only need to fit two parameters. Note that the number of constraints plus the number of free parameters agrees with the number of transitions.</p>
+<p>A very simple function to create emissions matrices is also provided. It is called createEM and the observation events are just connections to a specific tower. The input parameters are the dimensions of the rectangle, the location of towers (in grid units) and the distance decay function of the signal strength Martijn Tennekes (2018). In this case, each tile is required to be able to connect to at least one antenna, so no out of coverage tiles are allowed. Note that this is not a requirement for the model, just a limitation of createEM.</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1"></a>tws &lt;-<span class="st"> </span><span class="kw">matrix</span>(<span class="kw">c</span>(<span class="fl">3.2</span>, <span class="fl">6.1</span>, <span class="fl">2.2</span>, <span class="fl">5.7</span>, <span class="fl">5.9</span>, <span class="fl">9.3</span>, <span class="fl">5.4</span>,</span>
+<span id="cb7-2"><a href="#cb7-2"></a>                <span class="fl">4.0</span>, <span class="fl">2.9</span>, <span class="fl">8.6</span>, <span class="fl">6.9</span>, <span class="fl">6.2</span>, <span class="fl">9.7</span>, <span class="fl">1.3</span>),</span>
+<span id="cb7-3"><a href="#cb7-3"></a>              <span class="dt">nrow =</span> <span class="dv">2</span>, <span class="dt">ncol =</span> <span class="dv">7</span>)</span>
+<span id="cb7-4"><a href="#cb7-4"></a>S &lt;-<span class="st"> </span><span class="cf">function</span>(x) <span class="cf">if</span> (x <span class="op">&gt;</span><span class="st"> </span><span class="dv">5</span>) <span class="kw">return</span>(<span class="dv">0</span>) <span class="cf">else</span> <span class="kw">return</span>(<span class="dv">20</span><span class="op">*</span><span class="kw">log</span>(<span class="dv">5</span><span class="op">/</span>x))</span>
+<span id="cb7-5"><a href="#cb7-5"></a><span class="kw">emissions</span>(model)&lt;-<span class="kw">createEM</span>(<span class="kw">c</span>(<span class="dv">10</span>,<span class="dv">10</span>), tws, S)</span>
+<span id="cb7-6"><a href="#cb7-6"></a><span class="kw">dim</span>(<span class="kw">emissions</span>(model))</span>
+<span id="cb7-7"><a href="#cb7-7"></a><span class="co">#&gt; [1] 100   7</span></span></code></pre></div>
+</div>
+<div id="model-fitting" class="section level3">
+<h3>Model fitting</h3>
+<p>Once the model is defined, the next step is to fit its parameters, by constrained maximum likelihood. As already said, the optimizer usually requires an initial guess, so the function initparams obtains an initial random set of parameters.</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1"></a>model &lt;-<span class="st"> </span><span class="kw">initparams</span>(model)</span>
+<span id="cb8-2"><a href="#cb8-2"></a><span class="kw">all</span>(model<span class="op">$</span>parameters<span class="op">$</span>transitions <span class="op">&lt;</span><span class="st"> </span><span class="dv">1</span>)</span>
+<span id="cb8-3"><a href="#cb8-3"></a><span class="co">#&gt; [1] TRUE</span></span>
+<span id="cb8-4"><a href="#cb8-4"></a><span class="kw">all</span>(model<span class="op">$</span>parameters<span class="op">$</span>transitions <span class="op">&gt;</span><span class="st"> </span><span class="dv">0</span>)</span>
+<span id="cb8-5"><a href="#cb8-5"></a><span class="co">#&gt; [1] TRUE</span></span>
+<span id="cb8-6"><a href="#cb8-6"></a><span class="kw">range</span>(<span class="kw">constraints</span>(model) <span class="op">%*%</span><span class="st"> </span><span class="kw">c</span>(model<span class="op">$</span>parameters<span class="op">$</span>transitions, <span class="dv">-1</span>))</span>
+<span id="cb8-7"><a href="#cb8-7"></a><span class="co">#&gt; [1] -2.220446e-16  2.220446e-16</span></span></code></pre></div>
+<p>All transition probabilities are between zero and one and the constraints hold, but no observed data is used.</p>
+<p>The function minparams reduces the number of parameters of the model to the number of free parameters, as already explained.</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1"></a><span class="kw">ntransitions</span>(model)</span>
+<span id="cb9-2"><a href="#cb9-2"></a><span class="co">#&gt; [1] 784</span></span>
+<span id="cb9-3"><a href="#cb9-3"></a>model &lt;-<span class="st"> </span><span class="kw">minparams</span>(model)</span>
+<span id="cb9-4"><a href="#cb9-4"></a><span class="kw">rparams</span>(model)</span>
+<span id="cb9-5"><a href="#cb9-5"></a><span class="co">#&gt; [1] 0.33651234 0.01605274</span></span></code></pre></div>
+<p>So, only two parameters are really needed! It is possible to assign values with rparams, as the optimizer does, but some transition probability might move outside the interval <span class="math inline">\([0,1]\)</span>. The optimization process avoids this problem constraining by linear inequalities.</p>
+<p>Now the model is ready to be fitted. Of course, the observed events are needed. Since we have the emissions matrix in the model, the observed events is just an integer vector, that refers to the appropiate column of the emissions matrix.</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1"></a>obs &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="dv">1</span>,<span class="dv">2</span>,<span class="ot">NA</span>,<span class="ot">NA</span>,<span class="ot">NA</span>,<span class="ot">NA</span>,<span class="dv">7</span>,<span class="dv">7</span>)</span>
+<span id="cb10-2"><a href="#cb10-2"></a><span class="kw">logLik</span>(model, obs)</span>
+<span id="cb10-3"><a href="#cb10-3"></a><span class="co">#&gt; [1] 9.578216</span></span>
+<span id="cb10-4"><a href="#cb10-4"></a>model &lt;-<span class="st"> </span><span class="kw">fit</span>(model, obs)</span>
+<span id="cb10-5"><a href="#cb10-5"></a><span class="co">#&gt; Loading required package: Rsolnp</span></span>
+<span id="cb10-6"><a href="#cb10-6"></a><span class="kw">rparams</span>(model)</span>
+<span id="cb10-7"><a href="#cb10-7"></a><span class="co">#&gt; [1] 5.000000e-01 1.875804e-08</span></span>
+<span id="cb10-8"><a href="#cb10-8"></a><span class="kw">logLik</span>(model, obs)</span>
+<span id="cb10-9"><a href="#cb10-9"></a><span class="co">#&gt; [1] 8.862943</span></span></code></pre></div>
+<p>Despite the name, logLik returns minus the log-likelihood, so the smaller the better. As in the example, it is possible to introduce missing values for the observations as <em>NA</em>.</p>
+</div>
+<div id="the-final-estimations" class="section level3">
+<h3>The final estimations</h3>
+<p>Finally, the model is ready to produce some estimations. The main outputs of this package are the smooth states and the smooth consecutive pairwaise states (sometimes called <span class="math inline">\(\xi_{i j}\)</span> in the literature).</p>
+<p>The function sstates returns the smooth states as a matrix of <em>number of states</em> <span class="math inline">\(\times\)</span> <em>number of observations</em> (missing values included) dimensions. So each column represents the space distribution in its corresponding time slot.</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1"></a><span class="kw">dim</span>(<span class="kw">sstates</span>(model, obs))</span>
+<span id="cb11-2"><a href="#cb11-2"></a><span class="co">#&gt; [1] 100   8</span></span>
+<span id="cb11-3"><a href="#cb11-3"></a><span class="kw">image</span>(<span class="kw">matrix</span>(<span class="kw">sstates</span>(model, obs)[,<span class="dv">4</span>], <span class="dt">ncol =</span> <span class="dv">10</span>))</span></code></pre></div>
+<p><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASAAAAEgCAMAAAAjXV6yAAAAZlBMVEUAAAAAADoAAGYAOjoAOpAAZrY6AAA6ADo6kNtmAABmtv99ACWQOgCQZgCQ2/+iBwa2ZgC2///DIgDbkDrb///tYgDyhAD1oQD3ujz40HT75Jr/tmb/25D/9Lf//7b//8j//9v///8vEu1wAAAACXBIWXMAAA7DAAAOwwHHb6hkAAAEh0lEQVR4nO3c63LSQABA4VRLLVorincqlvd/SQMExmwgZxcWEpJzfjhmdFP4JglZNtNiZa0VXb+AvicQJBAkECQQJBAkECQQJBAkECQQJBAkECQQJBAkECQQJBAkECQQJBAkECQQJBAkECQQJBAkECQQJBAkECQQJBAkECQQJBAkECQQJBAkECQQJBAkECQQJBAkECQQJBAkECQQJBAkECQQJBAkECQQJBAkECQQJBAkECQQJBAkECQQJBAkECQQJBAkECQQJBAkECQQJBAkECQQlBno760U/b4FEuhgAkECQQJBVwYqdnX9vqPzCIIEggSCBIIEggSCBIIEggSCLgQ0K4rJ61N5x/xeoEPN77+WRpPVajl9FKjZ61PJsrh7rqgECltOyzNr8ebzavenQPU8gqj9NWhDJVAzP8XOrev3HZ1A0KWB5n6KJeV30rF1/b6jEwi6ENDmI77syBVo9EDzoro/XBTeKB7ov/tnpxqH2kxWtzlZPZRHEDXfzcG8Bh1pOd1+ih05fgTCun7f0QkECQQJBAkECQQJBAkECQTdMtCfsN9h4X/oP1DW76SHCLRPIIEEEkgggQQSSKAxA708HHvA7BSgX2E/wr6H/QxqkHYEtFvTaFmdHzfQbjnMI+hoy+l6RUyglmZ3zwK1Ni8eBWrt5eGtQK29Ph19jlwgSqCqjM9JDxMo3MsZ30mPAmgfv7LGxKrx9r+EfQoLRzT2KVBfgTI8Jz1ooBzPSQ8ZKMtTrkMGyvKc9JCBPIKoHM9JDxoox3PSwwbCBBLo6kDfwj5g4QiBBBJIIIEEEkigzoASvpMeJ9A+gQS6OhDPxRq57COQQAIJJJBA+YG6WXq+HaCOlp5vBqirhcObAepq6flmgLIcQY03w0+YhR4/Q2P+qdcByrL0PGigHEvPwwbCBBIortOfkx4JULiX+O+kxwm0TyCBWsswWR00UI7J6pCBnGpAEZPV4ma6BFDEERS533P+9ZKDzx3Ak9XI/Q4ViCerkfsdLFCu/Qok0Hn7FUig8/YrkECjSSBIIEggSCBIIEggSCBIIEggSCBIIEggKDPQoijung9uJI4tm/E330cGz4vi+K96TCwv0KJ8kYvdC61tJI5db0csDRwePF9v5BLKCrRdOJtNmhuJY1ebBZR4oOAHT1J+MJQVaPtbcKuHq2obiWPXf7v/GA9UG9xnoHfrg7xalq5tJI7dbCZcg+qD+3uKba8C1bWgtpE4dnPOJAAFPyvx06G1ngKt1/5PBpqVR9LLAy2OR9bPU2yzceoplnjxg/p5kZ5Xz6jEXkdqgxMPXai3H/NJR1Bt8FYr+tCF+nujmHQnXRvc32vQ5txYv8ztrUi1cdLYVeJUozZ4Vp6dmXycrFICQQJBAkECQQJBAkECQQJBAkECQQJBAkECQQJBAkECQQJBAkECQQJBAkECQQJBAkECQQJBAkECQQJBAkECQQJBAkECQQJBAkECQQJBAkECQQJBAkECQQJBAkECQQJBAkECQQJBAkECQQJBAkECQQJBAkECQQJBAkECQQJB/wAJFxF+zib1eQAAAABJRU5ErkJggg==" /><!-- --></p>
+<p>The function scpstates returns the (smooth) joint probability mass function for consecutive states, analogous to the usually denoted <span class="math inline">\(\xi_{i j}\)</span> probabilities in the Baum-Welch algorithm (once convergence is achieved). This time, each column represents the space bi-variant distribution matrix as follows: the probability of the consecutive pair of states <span class="math inline">\((i,j)\)</span> can be found in the row <span class="math inline">\(100(i-1) + j\)</span>.</p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1"></a><span class="kw">dim</span>(<span class="kw">scpstates</span>(model, obs))</span>
+<span id="cb12-2"><a href="#cb12-2"></a><span class="co">#&gt; [1] 100 700</span></span>
+<span id="cb12-3"><a href="#cb12-3"></a><span class="kw">image</span>(<span class="kw">as.matrix</span>(<span class="kw">scpstates</span>(model, obs)[,<span class="dv">1</span><span class="op">:</span><span class="dv">100</span> <span class="op">+</span><span class="st"> </span><span class="dv">3</span><span class="op">*</span><span class="dv">100</span>]), <span class="dt">xlim =</span> <span class="kw">c</span>(<span class="dv">0</span>,<span class="dv">1</span>))</span></code></pre></div>
+<p><img src="data:image/png;base64,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" /><!-- --></p>
+<p>Both each row and each column of the previous image are bidimensional spaces, so it is difficult to visualize: we would need four dimensions instead two! Even so, it is easy to see a diagonal pattern, which is coherent with the transition matrix. The transition matrix only allows transitions to contiguous points, so it is <em>almost</em> diagonal. In consequence, so are the <span class="math inline">\(\xi_{i j}\)</span> probabilities.</p>
+</div>
+</div>
+<div id="some-remarks-about-computational-efficiency" class="section level2">
+<h2>Some remarks about computational efficiency</h2>
+<p>The package has some degree of optimization, as it uses Rcpp and RcppEigen (for sparse linear algebra) in some critical functions. It can handle fairly well models with around <span class="math inline">\(10^7\)</span> states in a desktop computer (if enough RAM is provided). Some faster sparse linear algebra library (for example intel MKL) might improve a little bit the performance of such operations. Also, we are going to comment the possibility of improve the performance using parallel computing</p>
+<div id="model-construction" class="section level3">
+<h3>Model construction</h3>
+<p>As has been already stated, the package is not really ready for model construction, except for the function HMMrectangle, which are very basic models. While it is a rather fast function, its performance can be easily improved as it is an embarrassingly parallel algorithm. This also allows to use a cluster to generate the model.</p>
+</div>
+<div id="model-initialization-and-parametrization" class="section level3">
+<h3>Model initialization and parametrization</h3>
+<p>The algorithm used to find an inital value for the optimizer, solves a linear system of equations at each step. While the order of the system grows with the number of transitions and constraints, in practice, most constraints state the equality between two transition probabilities. It is not difficult to get rid of one of the transitions and the constraint in those cases, so in practice the process scales very well for parsimonious models.</p>
+<p>Mostly all said for initialization also goes for parametrization, where the QR decomposition is the <em>slow</em> step.</p>
+</div>
+<div id="forward-backward-algorithm" class="section level3">
+<h3>Forward-Backward algorithm</h3>
+<p>This is mostly multiply sparse matrices, which relies on another library (currently Eigen). Eigen is not the faster library at this even on a desktop computer but the performance is not so bad. In the future intel MKL might be a good choice, and it can also work in distributed mode.</p>
+</div>
+<div id="likelihood-optimization" class="section level3">
+<h3>Likelihood optimization</h3>
+<p>The purpose of all the previous steps is to make easier the task of the optimizer, so it should not be a problem if everything else is fine. Transition probabilities are required to be between zero and one, what in general means O(n) inequality constraints. A well specified parsimonious model, will often have a lot less constraints, as most of them are duplicated. As a reference, a HMMrectangle(20,20) has 3364 transitions and only 5 constraints are needed in practice.</p>
+<p>Equalities between transition probabilities would generate duplicated rows in the matrix of inequality constraints which are eliminated before calling the optimizer.</p>
+</div>
+</div>
+<div id="references" class="section level1 unnumbered">
+<h1>References</h1>
+<div id="refs" class="references">
+<div id="ref-WP5Deliverable1.3">
+<p>WPIDeliv1, European Statistical System. 2019. “Deliverable 1.3 Essnet on Big Data II.”</p>
+</div>
+</div>
+</div>
+
+
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
