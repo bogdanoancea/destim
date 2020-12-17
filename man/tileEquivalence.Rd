@@ -27,6 +27,6 @@ starting in the bottom left corner by 0.
 \examples{
 tileEquivalence(4, 3)
 
-tileEquivalence(4, 3, order_by = 'tileID')
+tileEquivalence(4, 3, order_by = 'tile')
 }
 \keyword{internal}

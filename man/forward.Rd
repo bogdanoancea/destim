@@ -7,7 +7,7 @@
 \usage{
 forward(...)
 
-\method{forward}{HMM}(x, y)
+\method{forward}{HMM}(x, y, ...)
 }
 \arguments{
 \item{x}{A HMM model.}
@@ -37,12 +37,14 @@ to calculate smooth states and smooth consecutive pairwise states. This is done
 by functions \code{sstates} and \code{scpstates}.
 }
 \examples{
+\dontrun{
 model <- HMMrectangle(3,3)
 emissions(model) <- Matrix(c(1, 1, 0.5, 1, 0.5, 0, 0.5, 0, 0,
                              0, 0, 0.5, 0, 0.5, 1, 0.5, 1, 1),
                              ncol = 2, sparse = TRUE)
 model <- initparams(model)
 forward(model, c(1,2,1))
+}
 }
 \seealso{
 \link{backward}, \link{sstates}, \link{scpstates}

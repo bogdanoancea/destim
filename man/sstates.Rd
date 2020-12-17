@@ -7,7 +7,7 @@
 \usage{
 sstates(...)
 
-\method{sstates}{HMM}(x, e)
+\method{sstates}{HMM}(x, e, ...)
 }
 \arguments{
 \item{x}{A HMM model.}

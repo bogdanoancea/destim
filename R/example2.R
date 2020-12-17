@@ -1,6 +1,8 @@
 #' This is just an example on how to use functions from \pkg{destim}.
 #' @keywords internal
+#' @include  createEM.R
 #' @examples
+#' \dontrun{
 #' #' #Towers position
 #' data(towers)
 #' # Function S for Tennekes's model
@@ -40,8 +42,11 @@
 #'  pal <- colorRampPalette(c("#00000000","#000000FF"), alpha = TRUE)
 #'  ani.options(interval = 0.02)
 #'  for (i in 1:198) {
-#'    plot(raster(cbind(matrix(0,ncol = 13, nrow = 20), matrix(1,ncol=1,nrow=20), matrix(0,ncol=6,nrow=20))), breaks = c(0,0.5,1), col = c("white","red"), legend = FALSE)
-#'    plot(raster(matrix(OS[,i], ncol = 20)), zlim = c(0,1), col = pal(100), add = TRUE)
+#'    plot(raster(cbind(matrix(0,ncol = 13, nrow = 20), matrix(1,ncol=1,nrow=20),
+#'    matrix(0,ncol=6,nrow=20))), breaks = c(0,0.5,1), col = c("white","red"),
+#'    legend = FALSE)
+#'    plot(raster(matrix(OS[,i], ncol = 20)), zlim = c(0,1), col = pal(100),
+#'    add = TRUE)
 #'    ani.pause()
 #'  }},  movie.name = 'obsest.gif')
 #' # Filtered states
@@ -49,8 +54,11 @@
 #'  pal <- colorRampPalette(c("#00000000","#000000FF"), alpha = TRUE)
 #'  ani.options(interval = 0.02)
 #'  for (i in 1:198) {
-#'    plot(raster(cbind(matrix(0,ncol = 13, nrow = 20), matrix(1,ncol=1,nrow=20), matrix(0,ncol=6,nrow=20))), breaks = c(0,0.5,1), col = c("white","red"), legend = FALSE)
-#'    plot(raster(matrix(FS[,i], ncol = 20)), zlim = c(0,1), col = pal(100), add = TRUE)
+#'    plot(raster(cbind(matrix(0,ncol = 13, nrow = 20), matrix(1,ncol=1,nrow=20),
+#'    matrix(0,ncol=6,nrow=20))), breaks = c(0,0.5,1), col = c("white","red"),
+#'    legend = FALSE)
+#'    plot(raster(matrix(FS[,i], ncol = 20)), zlim = c(0,1), col = pal(100),
+#'    add = TRUE)
 #'    ani.pause()
 #'  }},  movie.name = 'filteredest.gif')
 #' # Smooth states
@@ -58,8 +66,11 @@
 #'  pal <- colorRampPalette(c("#00000000","#000000FF"), alpha = TRUE)
 #'  ani.options(interval = 0.02)
 #'  for (i in 1:198) {
-#'    plot(raster(cbind(matrix(0,ncol = 13, nrow = 20), matrix(1,ncol=1,nrow=20), matrix(0,ncol=6,nrow=20))), breaks = c(0,0.5,1), col = c("white","red"), legend = FALSE)
-#'    plot(raster(matrix(SS[,i], ncol = 20)), zlim = c(0,1), col = pal(100), add = TRUE)
+#'    plot(raster(cbind(matrix(0,ncol = 13, nrow = 20), matrix(1,ncol=1,nrow=20),
+#'    matrix(0,ncol=6,nrow=20))), breaks = c(0,0.5,1), col = c("white","red"),
+#'    legend = FALSE)
+#'    plot(raster(matrix(SS[,i], ncol = 20)), zlim = c(0,1), col = pal(100),
+#'    add = TRUE)
 #'    ani.pause()
 #'  }},  movie.name = 'smoothest.gif')
 #' # The matrix GRID relates the states with coordinates
@@ -68,12 +79,15 @@
 #' GRID[2,] <- rep(1:20, each = 20)
 #' # Calculate square distance mean
 #' fdist <- sapply (1:198, function (x)
-#'           sum(apply(GRID - matrix(c(x %/% 10 + 1,14), nrow = 2, ncol = 400), 2,norm,type = "2") * FS[,x]))
+#'           sum(apply(GRID - matrix(c(x %/% 10 + 1,14), nrow = 2, ncol = 400),
+#'           2,norm,type = "2") * FS[,x]))
 #' sdist <- sapply (1:198, function (x)
-#'           sum(apply(GRID - matrix(c(x %/% 10 + 1,14), nrow = 2, ncol = 400),2,norm,type = "2") * SS[,x]))
+#'           sum(apply(GRID - matrix(c(x %/% 10 + 1,14), nrow = 2, ncol = 400),
+#'           2,norm,type = "2") * SS[,x]))
 #' dists <- data.frame(T = 1:198, fdist = fdist, sdist = sdist)
 #' ggplot() +
 #' geom_line(data = dists, aes(x = T, y = sdist), colour = "green") +
 #' geom_line(data = dists, aes(x = T, y = fdist), colour = "red")
 #'
+#'}
 example2 <- function() {}

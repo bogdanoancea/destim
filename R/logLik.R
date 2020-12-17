@@ -27,7 +27,7 @@ logLik <- function(...) {
 }
 #' @rdname logLik
 #' @export
-logLik.HMM <- function(x,e) {
+logLik.HMM <- function(x,e, ...) {
   TM <- createTM(x$transitions, x$parameters$transitions, nstates(x))
   return(floglik(TM, TM@x, rparams(x), x$parameters$reducedparams$transmatrix,
                  istates(x), emissions(x), as.integer(e) - 1L))

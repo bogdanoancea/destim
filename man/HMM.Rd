@@ -9,7 +9,7 @@
 \usage{
 HMM(...)
 
-\method{HMM}{integer}(S, TL, CT, EM = NULL, checks = TRUE)
+\method{HMM}{integer}(S, TL, CT, EM = NULL, checks = TRUE, ...)
 
 \method{HMM}{numeric}(S, ...)
 

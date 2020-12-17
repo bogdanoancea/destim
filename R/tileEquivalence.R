@@ -18,7 +18,7 @@
 #' @examples
 #' tileEquivalence(4, 3)
 #'
-#' tileEquivalence(4, 3, order_by = 'tileID')
+#' tileEquivalence(4, 3, order_by = 'tile')
 #' @keywords internal
 #' @export
 tileEquivalence <- function(nrow, ncol, order_by = c('rasterCell')){

@@ -25,7 +25,7 @@
 #' @seealso \link{rparams}, \link{rparams<-}
 #'
 #' @examples
-#' model <- HMMrectangle(2,2)
+#' model <- HMMrectangle(3,3)
 #' model <- initparams(model)
 #' ntransitions(model)
 #' nconstraints(model)

@@ -7,7 +7,7 @@
 \usage{
 logLik(...)
 
-\method{logLik}{HMM}(x, e)
+\method{logLik}{HMM}(x, e, ...)
 }
 \arguments{
 \item{x}{A HMM model.}

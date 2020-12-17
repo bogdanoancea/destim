@@ -16,7 +16,7 @@
 #' @references \url{https://github.com/MobilePhoneESSnetBigData}
 #'
 #' @examples
-#'
+#'\dontrun{
 #'library(data.table)
 #'library(tidyr)
 #'library(stringr)
@@ -212,5 +212,5 @@
 #'    )
 #'}
 #'}
-#'
+#'}
 example <- function() {}

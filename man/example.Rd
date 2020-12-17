@@ -23,7 +23,7 @@ simulation software. The files used in this example are provided with
 the \pkg{destim} package.
 }
 \examples{
-
+\dontrun{
 library(data.table)
 library(tidyr)
 library(stringr)
@@ -218,7 +218,7 @@ for (i in seq(along = deviceIDs)) {
    )
 }
 }
-
+}
 }
 \references{
 \url{https://github.com/MobilePhoneESSnetBigData}

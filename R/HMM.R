@@ -81,7 +81,7 @@ HMM <- function(...) {
 }
 #' @rdname HMM
 #' @export
-HMM.integer <- function(S, TL, CT, EM = NULL, checks = TRUE) {
+HMM.integer <- function(S, TL, CT, EM = NULL, checks = TRUE,...) {
 
   if (missing(TL))
     TL = matrix(c(1:S,1:S), nrow = 2, byrow = TRUE)

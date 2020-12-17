@@ -1,16 +1,16 @@
 #' @title Transform a location probability matrix into a key-value pair.
 #'
 #' @description This function transforms the matrix output for posterior
-#' location probabilities for each time instant (tiles $\times$ times) into a
+#' location probabilities for each time instant (\eqn{tiles $\times$ times}) into a
 #' key-value pair data.table with key = c(device, time, tile).
 #'
 #' The function does also this transformation upon the matrix of joint posterior
 #' location probabilities.
 #'
-#' @param postLocP matrix with dimensions tiles $\times$ times with the
+#' @param postLocP matrix with dimensions tiles \eqn{tiles $\times$ times} with the
 #' posterior location probabilities.
 #'
-#' @param postLocJointProb postLocP matrix of dimensions tiles $\times$ tiles * (times - 1)
+#' @param postLocJointProb postLocP matrix of dimensions tiles \eqn{$\times$ tiles * (times - 1)}
 #' with the posterior joint location probabilities.
 #'
 #' @param observedValues Vector with the observed values of the event variables.
@@ -34,6 +34,7 @@
 #'
 #'
 #' @import data.table
+#' @import Matrix
 #' @include tileEquivalence.R
 #' @keywords internal
 #' @export
@@ -41,11 +42,11 @@ transform_postLoc <- function(postLocP, postLocJointP = NULL, observedValues,
                               times, t_increment, ntiles, pad_coef = 1, tileEquiv.dt, devID,
                               sparse_postLocP = FALSE, sparse_postLocJointP = FALSE){
 
-
+  postLocProb <- time <- aux <- time_from <- rasterCell_to <- j <- device <- NULL
   postLocP0 <- copy(postLocP)
   postLocP0 <- as(postLocP0, "dgTMatrix")
-  postLocP.dt <- data.table(rasterCell = postLocP0@i+1,
-                            time = postLocP0@j+1,
+  postLocP.dt <- data.table(rasterCell = postLocP0@i + 1,
+                            time = postLocP0@j + 1,
                             postLocProb = postLocP0@x)
   if(sparse_postLocP){
 

@@ -19,7 +19,7 @@ transform_postLoc(
 )
 }
 \arguments{
-\item{postLocP}{matrix with dimensions tiles $\times$ times with the
+\item{postLocP}{matrix with dimensions tiles \eqn{tiles $\times$ times} with the
 posterior location probabilities.}
 
 \item{observedValues}{Vector with the observed values of the event variables.}
@@ -38,7 +38,7 @@ cells according to the network event data simulator and rasters in R.}
 
 \item{devID}{device ID.}
 
-\item{postLocJointProb}{postLocP matrix of dimensions tiles $\times$ tiles * (times - 1)
+\item{postLocJointProb}{postLocP matrix of dimensions tiles \eqn{$\times$ tiles * (times - 1)}
 with the posterior joint location probabilities.}
 }
 \value{
@@ -47,7 +47,7 @@ postLocJointProb with the key-value pair data.tables with these probabilities.
 }
 \description{
 This function transforms the matrix output for posterior
-location probabilities for each time instant (tiles $\times$ times) into a
+location probabilities for each time instant (\eqn{tiles $\times$ times}) into a
 key-value pair data.table with key = c(device, time, tile).
 
 The function does also this transformation upon the matrix of joint posterior

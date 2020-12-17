@@ -36,7 +36,7 @@ sstates <- function(...) {
 }
 #' @rdname sstates
 #' @export
-sstates.HMM <- function(x, e) {
+sstates.HMM <- function(x, e, ...) {
   fpass <- forward(x,e)
   bpass <- backward(x,e,fpass$scalefactors)
   return(fpass$alpha * bpass)

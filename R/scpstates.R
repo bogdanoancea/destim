@@ -37,7 +37,7 @@ scpstates <- function(...) {
 }
 #' @rdname scpstates
 #' @export
-scpstates.HMM <- function(x, e) {
+scpstates.HMM <- function(x, e, ...) {
   TM <- getTM(x)
   EM <- emissions(x)
   fpass <- forward(x,e)

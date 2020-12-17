@@ -7,7 +7,7 @@
 \usage{
 scpstates(...)
 
-\method{scpstates}{HMM}(x, e)
+\method{scpstates}{HMM}(x, e, ...)
 }
 \arguments{
 \item{x}{A HMM model.}

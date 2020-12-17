@@ -7,7 +7,7 @@
 \usage{
 backward(...)
 
-\method{backward}{HMM}(x, y, sfactors)
+\method{backward}{HMM}(x, y, sfactors, ...)
 }
 \arguments{
 \item{x}{A HMM model.}
@@ -26,6 +26,7 @@ to calculate smooth states and smooth consecutive pairwise states. This is done
 by functions \code{sstates} and \code{scpstates}.
 }
 \examples{
+library(Matrix)
 model <- HMMrectangle(3,3)
 emissions(model) <- Matrix(c(1, 1, 0.5, 1, 0.5, 0, 0.5, 0, 0,
                              0, 0, 0.5, 0, 0.5, 1, 0.5, 1, 1),

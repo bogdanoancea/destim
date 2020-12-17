@@ -31,7 +31,6 @@
 #' logLik(model,events)
 #' model <- fit(model,events)
 #' logLik(model,events)
-#'
 #' @export
 fit <- function(x, e, init = FALSE, method = "solnp", retrain = 1, ...) {
   if (is.null(x$parameters$reducedparams)) {
@@ -58,8 +57,8 @@ fit <- function(x, e, init = FALSE, method = "solnp", retrain = 1, ...) {
               istates(x), emissions(x), as.integer(e) - 1L)
     )
   if (method == "constrOptim") {
-    if (!require("stats"))
-      stop("Package states required for constrOptim method")
+    # if (!require("stats"))
+    #   stop("Package states required for constrOptim method")
     if (retrain == 1)
       rparams(x) <- stats::constrOptim(rparams(x), ofun, NULL,
                     ui, ci)$par
@@ -76,8 +75,8 @@ fit <- function(x, e, init = FALSE, method = "solnp", retrain = 1, ...) {
     }
   }
   else if (method == "solnp") {
-    if (!require("Rsolnp"))
-      stop("Package Rsolnp required for solnp method")
+    # if (!require("Rsolnp"))
+    #   stop("Package Rsolnp required for solnp method")
     lcall <- list(pars = rparams(x), fun = ofun,
                ineqfun = function(MAT) trmatrix %*% c(MAT, 1),
                ineqLB = rep(0, nrow(trmatrix)),

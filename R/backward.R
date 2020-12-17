@@ -14,6 +14,7 @@
 #' @seealso \link{forward}, \link{sstates}, \link{scpstates}
 #'
 #' @examples
+#' library(Matrix)
 #' model <- HMMrectangle(3,3)
 #' emissions(model) <- Matrix(c(1, 1, 0.5, 1, 0.5, 0, 0.5, 0, 0,
 #'                              0, 0, 0.5, 0, 0.5, 1, 0.5, 1, 1),
@@ -28,6 +29,6 @@ backward <- function(...) {
 }
 #' @rdname backward
 #' @export
-backward.HMM <- function(x,y,sfactors) return (
+backward.HMM <- function(x,y,sfactors, ...) return (
   fbackward(getTM(x), emissions(x), as.integer(y) - 1L, sfactors)
   )

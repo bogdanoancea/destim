@@ -26,12 +26,14 @@
 #' @seealso \link{backward}, \link{sstates}, \link{scpstates}
 #'
 #' @examples
+#' \dontrun{
 #' model <- HMMrectangle(3,3)
 #' emissions(model) <- Matrix(c(1, 1, 0.5, 1, 0.5, 0, 0.5, 0, 0,
 #'                              0, 0, 0.5, 0, 0.5, 1, 0.5, 1, 1),
 #'                              ncol = 2, sparse = TRUE)
 #' model <- initparams(model)
 #' forward(model, c(1,2,1))
+#' }
 #' @keywords internal
 #' @export
 forward <- function(...) {
@@ -39,7 +41,7 @@ forward <- function(...) {
 }
 #' @rdname forward
 #' @export
-forward.HMM <- function(x,y) return(
+forward.HMM <- function(x,y, ...) return(
   fforward(getTM(x), istates(x), emissions(x), as.integer(y) - 1L)
   )
 

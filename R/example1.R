@@ -4,6 +4,7 @@
 #' @references \url{https://github.com/MobilePhoneESSnetBigData}
 #' @keywords internal
 #' @examples
+#' \dontrun{
 #' # Local probabilities of transition
 #' mask <- matrix(c(0.00001, 0.00320, 0.00001,
 #'                  0.00320, 0.98716, 0.00320,
@@ -50,12 +51,14 @@
 #' GRID[2,] <- rep(1:20, each = 20)
 #' # Calculate square distance mean
 #' fdist <- sapply (1:198, function (x)
-#'           sum(apply(GRID - matrix(c(x %/% 10 + 1,14), nrow = 2, ncol = 400), 2,norm,type = "2") * FS[,x]))
+#'           sum(apply(GRID - matrix(c(x %/% 10 + 1,14), nrow = 2, ncol = 400),
+#'           2,norm,type = "2") * FS[,x]))
 #' sdist <- sapply (1:198, function (x)
-#'           sum(apply(GRID - matrix(c(x %/% 10 + 1,14), nrow = 2, ncol = 400),2,norm,type = "2") * SS[,x]))
+#'           sum(apply(GRID - matrix(c(x %/% 10 + 1,14), nrow = 2, ncol = 400),2
+#'           ,norm,type = "2") * SS[,x]))
 #' dists <- data.frame(T = 1:198, fdist = fdist, sdist = sdist)
 #' ggplot() +
 #' geom_line(data = dists, aes(x = T, y = sdist), colour = "green") +
 #' geom_line(data = dists, aes(x = T, y = fdist), colour = "red")
-#'
+#'}
 example1 <- function() {}

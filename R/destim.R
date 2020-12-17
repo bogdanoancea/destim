@@ -14,4 +14,7 @@
 #' @useDynLib destim
 #' @import RcppEigen
 #' @importFrom Rcpp evalCpp
+#' @importFrom methods as
+#' @importFrom methods is
+#' @importFrom stats runif
 NULL

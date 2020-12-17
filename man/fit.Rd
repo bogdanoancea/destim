@@ -43,7 +43,6 @@ model <- minparams(model)
 logLik(model,events)
 model <- fit(model,events)
 logLik(model,events)
-
 }
 \seealso{
 \link{logLik}, \link{initparams}, \link{minparams}
