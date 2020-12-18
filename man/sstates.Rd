@@ -10,6 +10,8 @@ sstates(...)
 \method{sstates}{HMM}(x, e, ...)
 }
 \arguments{
+\item{...}{the parameters as given in methods for specific models (HMM).}
+
 \item{x}{A HMM model.}
 
 \item{e}{A vector with the observed events. It admits missing values.}

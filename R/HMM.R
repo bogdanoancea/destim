@@ -55,6 +55,8 @@
 #' constraints of the object (see details).
 #' @param EM Matrix of emissions. It corresponds to the field
 #' emissions of the object (see details).
+#' @param checks if TRUE it checks for duplicates in the list of transitions.
+#' @param ... the parameters as given in methods for specific types.
 #'
 #' @return A HMM object.
 #'

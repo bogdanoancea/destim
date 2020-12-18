@@ -13,7 +13,7 @@
 #'
 #' @param x A HMM model.
 #' @param e A vector with the observed events. It admits missing values.
-#'
+#' @param ... the parameters as given in methods for specific models (HMM).
 #' @return A sparse matrix. The number of rows is the number of states, and the number of columns
 #' is the number of states times the number of observed events minus one. Each full row square
 #' slice of the output matrix corresponds to a joint probability mass function, so it sums up

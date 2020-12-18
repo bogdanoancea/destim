@@ -16,6 +16,8 @@ HMM(...)
 \method{HMM}{character}(S, ...)
 }
 \arguments{
+\item{...}{the parameters as given in methods for specific types.}
+
 \item{S}{Number or names of states. It can be either a numeric or a
 character.}
 
@@ -28,6 +30,8 @@ constraints of the object (see details).}
 
 \item{EM}{Matrix of emissions. It corresponds to the field
 emissions of the object (see details).}
+
+\item{checks}{if TRUE it checks for duplicates in the list of transitions.}
 }
 \value{
 A HMM object.

@@ -8,6 +8,7 @@
 #'
 #' @param x A HMM model.
 #' @param e A vector with the observed events. It admits missing values.
+#' @param ... the parameters as given in methods for specific models (HMM).
 #'
 #' @return The minus logarithm of the likelihood of the events given the model.
 #'
